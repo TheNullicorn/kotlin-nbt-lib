@@ -10,7 +10,7 @@ package me.nullicorn.ooze.nbt
  * @throws[IllegalArgumentException] if the [value]'s class is not allowed, given the supplied
  * [type].
  */
-data class Entry(
+data class Entry internal constructor(
     val type: Type,
     val name: String,
     val value: Any,
