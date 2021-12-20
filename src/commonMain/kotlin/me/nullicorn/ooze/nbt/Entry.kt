@@ -1,7 +1,4 @@
-package me.nullicorn.ooze.nbt.compound
-
-import me.nullicorn.ooze.nbt.Type
-import me.nullicorn.ooze.nbt.list.TagList
+package me.nullicorn.ooze.nbt
 
 /**
  * An NBT [value] associated with a [name] inside an NBT [compound][TagCompound].

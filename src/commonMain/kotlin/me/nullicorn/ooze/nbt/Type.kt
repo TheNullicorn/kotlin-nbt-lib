@@ -1,7 +1,5 @@
 package me.nullicorn.ooze.nbt
 
-import me.nullicorn.ooze.nbt.compound.TagCompound
-import me.nullicorn.ooze.nbt.list.TagList
 import kotlin.jvm.JvmStatic
 import kotlin.reflect.KClass
 

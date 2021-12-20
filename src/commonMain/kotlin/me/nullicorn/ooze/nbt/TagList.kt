@@ -1,7 +1,4 @@
-package me.nullicorn.ooze.nbt.list
-
-import me.nullicorn.ooze.nbt.Type
-import me.nullicorn.ooze.nbt.compound.TagCompound
+package me.nullicorn.ooze.nbt
 
 /**
  * An ordered collection of unnamed NBT tags, all with the same [Type].

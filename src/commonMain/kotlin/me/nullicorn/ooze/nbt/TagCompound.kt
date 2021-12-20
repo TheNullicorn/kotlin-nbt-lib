@@ -1,7 +1,4 @@
-package me.nullicorn.ooze.nbt.compound
-
-import me.nullicorn.ooze.nbt.Type
-import me.nullicorn.ooze.nbt.list.TagList
+package me.nullicorn.ooze.nbt
 
 /**
  * An unordered set of NBT tags, each with a unique name within the current scope (the compound
