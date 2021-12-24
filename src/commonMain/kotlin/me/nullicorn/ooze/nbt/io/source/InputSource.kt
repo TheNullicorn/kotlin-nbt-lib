@@ -18,7 +18,13 @@ internal interface InputSource {
      * @throws[InputException] if the source cannot be read from, or if the source runs out of bytes
      * to consume before the operation is complete.
      */
-    fun readToNewBuffer(length: Int) = readToBuffer(ByteArray(length), 0, length)
+    fun readToNewBuffer(length: Int): ByteArray {
+        require(length <= MAX_ALLOCATION) {
+            "Cannot allocate more than $MAX_ALLOCATION bytes ($length)"
+        }
+
+        return readToBuffer(ByteArray(length), 0, length)
+    }
 
     /**
      * Consumes the next `n` bytes from the source, copying them to an existing [buffer] starting at
@@ -62,4 +68,8 @@ internal interface InputSource {
      * discard.
      */
     fun skipByte() = runUnsafeInput("skipping byte") { skip(1) }
+
+    private companion object {
+        private const val MAX_ALLOCATION = Int.SIZE_BITS - 8
+    }
 }
