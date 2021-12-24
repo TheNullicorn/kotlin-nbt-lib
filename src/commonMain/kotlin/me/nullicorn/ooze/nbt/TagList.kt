@@ -1,13 +1,20 @@
 package me.nullicorn.ooze.nbt
 
+import kotlin.js.JsExport
+
 /**
  * An ordered collection of unnamed NBT tags, all with the same [Type].
  *
  * @param[contentType] The NBT type shared by all elements in the list.
  */
-class TagList internal constructor(val contentType: Type, vararg elements: Any) : Iterable<Any> {
+@JsExport
+class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
 
     private val elements: MutableList<Any> = mutableListOf(*elements)
+
+    init {
+        checkValues(elements)
+    }
 
     /**
      * The number of elements in the list.
@@ -61,27 +68,23 @@ class TagList internal constructor(val contentType: Type, vararg elements: Any) 
      *
      * This operation increases the list's [size] by `1`.
      *
-     * @param[index] The index that the new [value] will be held at. This must be less than or equal
-     * to the list's [size].
      * @param[value] The value to insert at the [index].
+     * @param[index] The index that the new [value] will be held at. This must be less than or equal
+     * to the list's [size]. If not set, it defaults to the list's [size], making the value the last
+     * element in the list.
      *
      * @throws[IndexOutOfBoundsException] if the [index] is not between `0` and the list's [size],
      * both inclusive.
      * @throws[IllegalArgumentException] if the [value] is not compatible with the list's
      * [contentType].
      */
-    fun add(index: Int, value: Any) {
-        elements.add(index, checkValue(value))
-    }
+    fun add(value: Any, index: Int? = null) {
+        val safeValue = checkValue(value)
 
-    /**
-     * Appends a new [value] to the end of the list, increasing the list's [size] by `1`.
-     *
-     * This is equivalent to [add] with the list's [size] as the `index`. All contracts from
-     * [add] apply to this overload.
-     */
-    fun add(value: Any) {
-        add(size, value)
+        if (index == null)
+            elements.add(safeValue)
+        else
+            elements.add(index, safeValue)
     }
 
     /**
@@ -104,18 +107,13 @@ class TagList internal constructor(val contentType: Type, vararg elements: Any) 
      * list's [contentType]. In that case, none of the values will be added, and the list will not
      * be modified.
      */
-    fun addAll(index: Int, values: Iterable<Any>) {
-        elements.addAll(index, checkValues(values))
-    }
+    fun addAll(values: Array<Any>, index: Int? = null) {
+        val safeValues = checkValues(values)
 
-    /**
-     * Appends any supplied [values] to the end of the list, in order.
-     *
-     * This is equivalent to [addAll] with the list's [size] as the `index`. All contracts from
-     * [addAll] apply to this overload.
-     */
-    fun addAll(values: Iterable<Any>) {
-        addAll(size, values)
+        if (index != null)
+            elements.addAll(index, safeValues)
+        else
+            elements.addAll(safeValues)
     }
 
     /**
@@ -152,7 +150,10 @@ class TagList internal constructor(val contentType: Type, vararg elements: Any) 
      *
      * @return `true` if any elements were removed. Otherwise `false`.
      */
-    fun removeAll(values: Iterable<Any>) = elements.removeAll(checkValues(values))
+    fun removeAll(values: Array<Any>): Boolean {
+        val safeValues = checkValues(values)
+        return elements.removeAll(safeValues)
+    }
 
     /**
      * Checks if the list contains any elements [equal][Any.equals] to a specific [value].
@@ -167,9 +168,9 @@ class TagList internal constructor(val contentType: Type, vararg elements: Any) 
      * @return `true` if all supplied [values] have one or more equivalents in the list. Otherwise
      * `false`.
      */
-    fun containsAll(values: Collection<Any>) = elements.containsAll(values)
+    fun containsAll(values: Array<Any>) = elements.containsAll(values.toSet())
 
-    override fun iterator(): MutableIterator<Any> = elements.iterator()
+    override fun iterator() = elements.iterator()
 
     ///////////////////////////////////////////////////////////////////////////
     // Internal Helper Methods.
@@ -216,7 +217,7 @@ class TagList internal constructor(val contentType: Type, vararg elements: Any) 
      * @throws[IllegalArgumentException] if any of the values' classes do not match the one required
      * by the [contentType].
      */
-    private fun <T : Any> checkValues(values: Iterable<T>): Collection<T> {
+    private fun <T : Any> checkValues(values: Array<T>): Collection<T> {
         // Retrieve all elements immediately, so that bad values can't be injected by returning
         // valid values to this function, but not to the caller.
         val listOfValues = values.toList()
@@ -277,6 +278,7 @@ class TagList internal constructor(val contentType: Type, vararg elements: Any) 
      * [lastIndex], or if the list is [empty][isEmpty].
      * @throws[IllegalStateException] if the list's [contentType] is not [Type.LONG].
      */
+    @Suppress("NON_EXPORTABLE_TYPE")
     fun getLong(index: Int) = getWithType<Long>(index, Type.LONG)
 
     /**

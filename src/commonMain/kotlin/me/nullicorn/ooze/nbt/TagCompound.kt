@@ -1,10 +1,13 @@
 package me.nullicorn.ooze.nbt
 
+import kotlin.js.JsExport
+
 /**
  * An unordered set of NBT tags, each with a unique name within the current scope (the compound
  * itself).
  */
-class TagCompound internal constructor(private val entries: MutableSet<Entry>) : Iterable<Entry> {
+@JsExport
+class TagCompound internal constructor(private val entries: MutableSet<Entry>) {
 
     /**
      * The number of entries in the compound.
@@ -24,27 +27,20 @@ class TagCompound internal constructor(private val entries: MutableSet<Entry>) :
      * This does not include the names of entries in nested compounds–compounds within the current
      * one; only direct child tag names.
      */
-    val names: Iterable<String> get() = entries.map(Entry::name).toSet()
-
-    /**
-     * Checks if the compound contains any entry for a specific [name].
-     *
-     * @param[name] The entry's unique identifier within the compound.
-     * @return `true` if the compound directly has an entry using the [name] supplied. Otherwise
-     * `false`.
-     */
-    fun contains(name: String) = entries.any { it.name == name }
+    val names: Array<String> get() = entries.map(Entry::name).toTypedArray()
 
     /**
      * Checks if the compound contains any entry for a specific [name] that also uses a specific
      * [type].
      *
      * @param[name] The entry's unique identifier within the compound.
-     * @param[type] The NBT type that the entry should use.
+     * @param[type] The NBT type that the entry should use. If `null`, all types are considered.
      * @return `true` if the compound directly has an entry using the [name] and [type] supplied.
      * Otherwise `false`.
      */
-    fun contains(name: String, type: Type) = entries.any { it.name == name && it.type == type }
+    fun contains(name: String, type: Type? = null): Boolean =
+        if (type == null) entries.any { it.name == name }
+        else entries.any { it.name == name && it.type == type }
 
     /**
      * Retrieves the NBT type of the entry with a specific [name].
@@ -59,19 +55,7 @@ class TagCompound internal constructor(private val entries: MutableSet<Entry>) :
     /**
      * Retrieves an entry in the compound with a specific [name].
      *
-     * @param[name] The entry's unique identifier within the compound.
-     * @return the entry's [value][Entry.value], or `null` if the compound has no entry with the
-     * [name] supplied.
-     */
-    operator fun get(name: String) = entries.firstOrNull {
-        it.name == name
-    }?.value
-
-    /**
-     * Retrieves an entry in the compound with a specific [name], only if its [type][Entry.type] is
-     * equal to the one specified.
-     *
-     * Since the type is known ahead of time, it is recommended to use one of the type-specific
+     * If the type is known ahead of time, it is recommended to use one of the type-specific
      * getters this class offers, which take care of type checking and casting automatically.
      * - [getByte] for [bytes][Type.BYTE]
      * - [getShort] for [shorts][Type.SHORT]
@@ -87,13 +71,13 @@ class TagCompound internal constructor(private val entries: MutableSet<Entry>) :
      * - [getCompound] for inner [compounds][Type.COMPOUND]
      *
      * @param[name] The entry's unique identifier within the compound.
-     * @param[type] The expected [Type] for the entry to have.
+     * @param[type] The expected [Type] for the entry to have. If `null`, all types will be
+     * considered.
      * @return the entry's [value][Entry.value], or `null` if the compound has no entry with the
-     * [name] *and* [type] supplied.
-     * @see[get]
+     * [name] and (optionally) [type] supplied.
      */
-    operator fun get(name: String, type: Type) = entries.firstOrNull {
-        it.name == name && it.type == type
+    operator fun get(name: String, type: Type? = null) = entries.firstOrNull {
+        it.name == name && (type == null || it.type == type)
     }?.value
 
     /**
@@ -120,8 +104,6 @@ class TagCompound internal constructor(private val entries: MutableSet<Entry>) :
      * supplied
      */
     fun remove(name: String) = entries.removeAll { it.name == name }
-
-    override fun iterator() = entries.iterator()
 
     ///////////////////////////////////////////////////////////////////////////
     // Type-Specific Getters
@@ -278,7 +260,7 @@ class TagCompound internal constructor(private val entries: MutableSet<Entry>) :
                 && it.type == Type.LIST
                 && it.value is TagList
                 && it.value.contentType == contentType
-    }
+    }?.value
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
