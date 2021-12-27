@@ -51,10 +51,38 @@ internal fun InputSource.skipLong() = runUnsafeInput("skipping long") {
  * @throws[IllegalArgumentException] if [length] is greater than `8`.
  */
 internal fun InputSource.readArbitrarySizeLong(length: Int, endian: Endianness): Long {
-    require(length >= 0) { "Long cannot use a negative number of bytes: $length" }
-    require(length <= SIZE_BYTES) { "Long can only hold up to $SIZE_BYTES bytes, not $length" }
+    checkArbitraryLength(length)
 
-    val bytes = readToBuffer(arbitraryLongBuffer, 0, length)
+    val bytes = readToBuffer(arbitraryLongBuffer, offset = 0, length)
+    return bytes.readArbitrarySizeLong(length, endian)
+}
+
+/**
+ * Combines `n` bytes from the array into a [Long], starting at `i = `[offset].
+ *
+ * @param[length] `n`, the number of bytes to combine.
+ * @param[endian] The order to combine the bytes in.
+ * @param[offset] The index of the first byte to combine.
+ * @return the value of the combined bytes, as a [Long].
+ *
+ * @throws[IllegalArgumentException] if [length] is less than `0`.
+ * @throws[IllegalArgumentException] if [length] is greater than `8`.
+ * @throws[IndexOutOfBoundsException] if [offset] is less than `0`.
+ * @throws[IndexOutOfBoundsException] if [offset] + [length] is greater than the array's
+ * [lastIndex].
+ */
+internal fun ByteArray.readArbitrarySizeLong(
+    length: Int,
+    endian: Endianness,
+    offset: Int = 0,
+): Long {
+    checkArbitraryLength(length)
+    if (offset < 0) {
+        throw IndexOutOfBoundsException("offset < 0 (size=$size)")
+    } else if (offset + length > lastIndex) {
+        throw IndexOutOfBoundsException("$offset is too high (size=$size)")
+    }
+
     var result = 0L
 
     for (i in 0 until length) {
@@ -62,9 +90,18 @@ internal fun InputSource.readArbitrarySizeLong(length: Int, endian: Endianness):
             if (endian == Endianness.LITTLE) i
             else length - i - 1
 
-        val bits = bytes[i].toLong()
+        val bits = this[offset + i].toLong()
         result = result or (bits shl (Byte.SIZE_BITS * bytesToShift))
     }
 
     return result
+}
+
+/**
+ * @throws[IllegalArgumentException] if the [length] is negative, or if it is too many bytes to hold
+ * in a single [Long].
+ */
+private fun checkArbitraryLength(length: Int) {
+    require(length >= 0) { "Long cannot use a negative number of bytes: $length" }
+    require(length <= SIZE_BYTES) { "Long can only hold up to $SIZE_BYTES bytes, not $length" }
 }

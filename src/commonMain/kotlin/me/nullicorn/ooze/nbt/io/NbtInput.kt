@@ -17,11 +17,7 @@ class NbtInput internal constructor(private val source: InputSource) {
     constructor(bytes: ByteArray) : this(ByteArrayInputSource(bytes))
 
     fun readRootCompound(): TagCompound {
-        val rootType = try {
-            readType()
-        } catch (cause: InputException) {
-            throw InputException("Stream ended while reading the root value's type")
-        }
+        val rootType = runUnsafeInput("reading root value's type") { readType() }
 
         return if (rootType == null) {
             // If the type is null (indicating TAG_End), then the root is considered empty.
@@ -145,13 +141,7 @@ class NbtInput internal constructor(private val source: InputSource) {
     @Throws(InputException::class, MalformedNbtException::class)
     fun readByteArray(): ByteArray {
         val length = readLength(Type.BYTE_ARRAY)
-
-        // Read the array itself.
-        return try {
-            source.readToNewBuffer(length)
-        } catch (cause: InputException) {
-            throw InputException("Stream ended while reading contents of ${Type.BYTE_ARRAY}")
-        }
+        return runUnsafeInput("reading byte array contents") { source.readToNewBuffer(length) }
     }
 
     /**
@@ -168,12 +158,7 @@ class NbtInput internal constructor(private val source: InputSource) {
     @Throws(InputException::class, MalformedNbtException::class)
     fun readIntArray(): IntArray {
         val length = readLength(Type.INT_ARRAY)
-        return try {
-            // TODO: 12/23/21 Read the entire array to a buffer, then decode the ints in that array.
-            IntArray(length) { readInt() }
-        } catch (e: InputException) {
-            throw InputException("Stream ended while reading contents of ${Type.INT_ARRAY}")
-        }
+        return runUnsafeInput("reading int array contents") { source.readIntArray(length) }
     }
 
     /**
@@ -190,12 +175,7 @@ class NbtInput internal constructor(private val source: InputSource) {
     @Throws(InputException::class, MalformedNbtException::class)
     fun readLongArray(): LongArray {
         val length = readLength(Type.LONG_ARRAY)
-        return try {
-            // TODO: 12/23/21 Read the entire array to a buffer, then decode the longs in that array.
-            LongArray(length) { readLong() }
-        } catch (e: InputException) {
-            throw InputException("Stream ended while reading contents of ${Type.LONG_ARRAY}")
-        }
+        return runUnsafeInput("reading long array contents") { source.readLongArray(length) }
     }
 
     /**
@@ -247,29 +227,16 @@ class NbtInput internal constructor(private val source: InputSource) {
 
         while (true) {
             // Determine the next tag's type.
-            val type = try {
-                // If we read null as a type (indicating TAG_End), then the compound is done.
-                readType() ?: break
-            } catch (cause: InputException) {
-                throw InputException("Stream ended while reading tag type for compound", cause)
-            }
+            val type = runUnsafeInput("reading tag type in compound") {
+                readType()
+            } ?: break // If we read null as a type (indicating TAG_End), then the compound is done.
 
             // Determine the next tag's name.
-            val name = try {
-                readString()
-            } catch (cause: InputException) {
-                throw InputException(
-                    "Stream ended while reading tag name for compound (t=$type)",
-                    cause)
-            }
+            val name = runUnsafeInput("reading tag name in compound (t=$type)") { readString() }
 
             // Read the value of the next tag.
-            val value = try {
+            val value = runUnsafeInput("reading tag value in compound (t=$type, n=$name)") {
                 readTag(type)
-            } catch (cause: InputException) {
-                throw InputException(
-                    "Stream ended while reading tag value for compound (t=$type, n=$name)",
-                    cause)
             }
 
             // Add the tag to the compound.
@@ -319,11 +286,7 @@ class NbtInput internal constructor(private val source: InputSource) {
      */
     private fun readLength(type: Type): Int {
         // Read the length value, which is an int.
-        val length = try {
-            source.readInt()
-        } catch (cause: InputException) {
-            throw InputException("Stream ended while reading length for $type")
-        }
+        val length = runUnsafeInput("reading length of $type") { source.readInt() }
 
         // Make sure the length is non-negative.
         if (length < 0) {
