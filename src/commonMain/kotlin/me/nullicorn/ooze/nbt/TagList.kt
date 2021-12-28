@@ -107,7 +107,7 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      * list's [contentType]. In that case, none of the values will be added, and the list will not
      * be modified.
      */
-    fun addAll(values: Array<Any>, index: Int? = null) {
+    fun addAll(index: Int? = null, vararg values: Any) {
         val safeValues = checkValues(values)
 
         if (index != null)
@@ -150,7 +150,7 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      *
      * @return `true` if any elements were removed. Otherwise `false`.
      */
-    fun removeAll(values: Array<Any>): Boolean {
+    fun removeAll(vararg values: Any): Boolean {
         val safeValues = checkValues(values)
         return elements.removeAll(safeValues)
     }
@@ -168,7 +168,7 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      * @return `true` if all supplied [values] have one or more equivalents in the list. Otherwise
      * `false`.
      */
-    fun containsAll(values: Array<Any>) = elements.containsAll(values.toSet())
+    fun containsAll(vararg values: Any) = elements.containsAll(values.toSet())
 
     override fun iterator() = elements.iterator()
 
