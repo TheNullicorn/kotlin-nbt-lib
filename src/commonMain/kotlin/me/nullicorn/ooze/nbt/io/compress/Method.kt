@@ -1,17 +1,18 @@
-package me.nullicorn.ooze.nbt.io
+package me.nullicorn.ooze.nbt.io.compress
 
 /**
  * Supported methods for compressing binary NBT data.
  */
-internal enum class NbtCompression {
+internal enum class Method {
+
     /**
      * Indicates the data is not compressed.
      */
     NONE,
 
-    GZIP,
+    ZLIB,
 
-    ZLIB;
+    GZIP;
 
     companion object {
         // The bytes at the start of every stream using gzip.
@@ -34,7 +35,7 @@ internal enum class NbtCompression {
          * numbers. See the attached link for their post.
          * @see <a href="https://stackoverflow.com/a/54915442">@mwfearnley's post</a>
          */
-        fun fromMagicNumbers(byte1: Byte, byte2: Byte): NbtCompression {
+        fun fromMagicNumbers(byte1: Byte, byte2: Byte): Method {
             val magic = (byte1.toInt() shl 8) and byte2.toInt()
 
             // GZip uses a static magic number: 1F 8B

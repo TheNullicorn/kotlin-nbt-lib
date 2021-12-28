@@ -1,5 +1,6 @@
 package me.nullicorn.ooze.nbt.io
 
+import me.nullicorn.ooze.nbt.io.compress.Method
 import me.nullicorn.ooze.nbt.io.source.EmptyInputSource
 import me.nullicorn.ooze.nbt.io.source.StreamInputSource
 import me.nullicorn.ooze.nbt.lib.isExhausted
@@ -77,10 +78,10 @@ fun NbtInput(stream: InputStream): NbtInput {
     }
 
     // Wrap the stream in a decompressed one, if necessary.
-    val decompressedStream = when (NbtCompression.fromMagicNumbers(magic1, magic2)) {
-        NbtCompression.GZIP -> GZIPInputStream(peekStream)
-        NbtCompression.ZLIB -> InflaterInputStream(peekStream)
-        NbtCompression.NONE -> peekStream
+    val decompressedStream = when (Method.fromMagicNumbers(magic1, magic2)) {
+        Method.NONE -> peekStream
+        Method.ZLIB -> InflaterInputStream(peekStream)
+        Method.GZIP -> GZIPInputStream(peekStream)
     }
 
     return NbtInput(StreamInputSource(decompressedStream))

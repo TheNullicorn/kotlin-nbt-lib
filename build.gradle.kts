@@ -42,7 +42,16 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
+
         val jvmMain by getting {}
-        val jsMain by getting {}
+
+        val jsMain by getting {
+            dependencies {
+                // DEFLATE and gzip in JavaScript, via pako.
+                // https://github.com/nodeca/pako
+                implementation(npm("pako", "2.0.4"))
+                implementation(npm("@types/pako", "1.0.3", generateExternals = true))
+            }
+        }
     }
 }

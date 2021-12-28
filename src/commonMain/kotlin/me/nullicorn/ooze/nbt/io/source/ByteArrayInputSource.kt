@@ -1,6 +1,8 @@
 package me.nullicorn.ooze.nbt.io.source
 
 import me.nullicorn.ooze.nbt.io.InputException
+import me.nullicorn.ooze.nbt.io.compress.Method
+import me.nullicorn.ooze.nbt.io.compress.decompress
 
 /**
  * A source whose information is provided by a fully-present sequence of bytes in memory.
@@ -11,7 +13,7 @@ import me.nullicorn.ooze.nbt.io.InputException
  */
 internal class ByteArrayInputSource(source: ByteArray) : InputSource {
 
-    private val source = source.copyOf()
+    private val source: ByteArray
 
     /**
      * The index in the [source] where the next byte can be found.
@@ -19,6 +21,19 @@ internal class ByteArrayInputSource(source: ByteArray) : InputSource {
      * This increases by `1` for every byte read.
      */
     private var head = 0
+
+    init {
+        // Clone the array to avoid accidental tampering while reading.
+        val sourceCopy = source.copyOf()
+
+        // Detect if the array uses compression.
+        val compressionMethod = Method.fromMagicNumbers(sourceCopy[0], sourceCopy[1])
+
+        // Decompress the bytes if necessary. Otherwise use the copy directly.
+        this.source =
+            if (compressionMethod == Method.NONE) sourceCopy
+            else sourceCopy.decompress(compressionMethod)
+    }
 
     override fun readToBuffer(buffer: ByteArray, offset: Int, length: Int): ByteArray {
         // Make sure the supplied array has enough room for the bytes.
