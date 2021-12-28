@@ -27,7 +27,10 @@ internal class ByteArrayInputSource(source: ByteArray) : InputSource {
         val sourceCopy = source.copyOf()
 
         // Detect if the array uses compression.
-        val compressionMethod = Method.fromMagicNumbers(sourceCopy[0], sourceCopy[1])
+        // If the array is too small to tell, default to NONE.
+        val compressionMethod =
+            if (sourceCopy.size >= 2) Method.fromMagicNumbers(sourceCopy[0], sourceCopy[1])
+            else Method.NONE
 
         // Decompress the bytes if necessary. Otherwise use the copy directly.
         this.source =
