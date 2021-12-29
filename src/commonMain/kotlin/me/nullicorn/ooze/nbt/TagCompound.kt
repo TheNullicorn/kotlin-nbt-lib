@@ -274,6 +274,154 @@ class TagCompound(vararg entries: Entry) {
                 && it.value.contentType == contentType
     }?.value
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Type-Specific Setters
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Assigns the value of the tag with the specified [name] to a byte [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.BYTE, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setByte(name: String, value: Byte) = set(name, Type.BYTE, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to a short [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.SHORT, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setShort(name: String, value: Short) = set(name, Type.SHORT, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to an int [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.INT, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setInt(name: String, value: Int) = set(name, Type.INT, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to a long [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.LONG, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setLong(name: String, value: LongArray) = set(name, Type.LONG, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to a float [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.FLOAT, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setFloat(name: String, value: Float) = set(name, Type.FLOAT, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to a double [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.DOUBLE, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setDouble(name: String, value: Double) = set(name, Type.DOUBLE, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to an array of bytes, [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.BYTE_ARRAY, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setByteArray(name: String, value: ByteArray) = set(name, Type.BYTE_ARRAY, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to an array of ints, [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.INT_ARRAY, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setIntArray(name: String, value: IntArray) = set(name, Type.INT_ARRAY, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to an array of longs, [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.LONG_ARRAY, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setLongArray(name: String, value: LongArray) = set(name, Type.LONG_ARRAY, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to a string [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.STRING, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setString(name: String, value: String) = set(name, Type.STRING, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to a list of tags, [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.LIST, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setList(name: String, value: TagList) = set(name, Type.LIST, value)
+
+    /**
+     * Assigns the value of the tag with the specified [name] to an inner compound [value].
+     *
+     * This function is equivalent to
+     * ```kotlin
+     * set(name, Type.COMPOUND, value)
+     * ```
+     * The general contract of [set] also applies to this method.
+     * @see[set]
+     */
+    fun setCompound(name: String, value: TagCompound) = set(name, Type.COMPOUND, value)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
