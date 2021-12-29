@@ -61,6 +61,21 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
     operator fun set(index: Int, value: Any) = elements.set(index, checkValue(value))
 
     /**
+     * Appends a new [value] at the end of the list.
+     *
+     * This operation increases the list's [size] by `1`.
+     *
+     * @param[value] The value to insert at the end of the list.
+     *
+     * @throws[IllegalArgumentException] if the [value] is not compatible with the list's
+     * [contentType].
+     */
+    fun add(value: Any) {
+        val safeValue = checkValue(value)
+        elements.add(safeValue)
+    }
+
+    /**
      * Inserts a new [value] into the list at a given [index].
      *
      * Any elements previously at or beyond the [index] will have their indices increased by `1`.
@@ -78,13 +93,28 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      * @throws[IllegalArgumentException] if the [value] is not compatible with the list's
      * [contentType].
      */
-    fun add(value: Any, index: Int? = null) {
+    fun addAt(index: Int, value: Any) {
         val safeValue = checkValue(value)
+        elements.add(index, safeValue)
+    }
 
-        if (index == null)
-            elements.add(safeValue)
-        else
-            elements.add(index, safeValue)
+    /**
+     * Adds any supplied [values] to the end of the list, in order.
+     *
+     * The first supplied value will be [added][add] at the supplied [lastIndex]` + 1`.
+     * The next value will be added at [lastIndex]` + 2`. And so on.
+     *
+     * This operation increases the list's [size] by the number of [values] supplied.
+     *
+     * @param[values] The values to insert into the list.
+     *
+     * @throws[IllegalArgumentException] if any of the supplied [values] are not compatible with the
+     * list's [contentType]. In that case, none of the values will be added, and the list will not
+     * be modified.
+     */
+    fun addAll(vararg values: Any) {
+        val safeValues = checkValues(values)
+        elements.addAll(safeValues)
     }
 
     /**
@@ -107,14 +137,20 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      * list's [contentType]. In that case, none of the values will be added, and the list will not
      * be modified.
      */
-    fun addAll(index: Int? = null, vararg values: Any) {
+    fun addAllAt(index: Int, vararg values: Any) {
         val safeValues = checkValues(values)
-
-        if (index != null)
-            elements.addAll(index, safeValues)
-        else
-            elements.addAll(safeValues)
+        elements.addAll(index, safeValues)
     }
+
+    /**
+     * Remove a single instance of a [value] from the list, if present.
+     *
+     * If the operation succeeds, the list's [size] will decrease by `1`, and any elements that had
+     * a greater index than the removed element will have their indices decreased by `1`.
+     *
+     * @return `true` if an instance the value was removed. `false` if the value isn't in the list.
+     */
+    fun remove(value: Any) = elements.remove(value)
 
     /**
      * Removes the element at a specific [index] in the list.
@@ -126,16 +162,6 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      * [lastIndex], or if the list is [empty][isEmpty].
      */
     fun removeAt(index: Int) = elements.removeAt(index)
-
-    /**
-     * Remove a single instance of a [value] from the list, if present.
-     *
-     * If the operation succeeds, the list's [size] will decrease by `1`, and any elements that had
-     * a greater index than the removed element will have their indices decreased by `1`.
-     *
-     * @return `true` if an instance the value was removed. `false` if the value isn't in the list.
-     */
-    fun remove(value: Any) = elements.remove(value)
 
     /**
      * Removes an instance of a value from the list for every instance of that value in a supplied
