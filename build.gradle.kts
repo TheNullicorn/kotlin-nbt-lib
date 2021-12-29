@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.6.20-M1-6"
+    kotlin("multiplatform") version "1.6.20-M1-23"
 }
 
 group = "me.nullicorn.ooze"
