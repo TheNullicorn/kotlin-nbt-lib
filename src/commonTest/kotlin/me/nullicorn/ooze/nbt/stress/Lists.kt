@@ -5,7 +5,7 @@ import me.nullicorn.ooze.nbt.TagList
 import me.nullicorn.ooze.nbt.Type
 
 internal fun listValues(includeCompounds: Boolean = true) = buildList {
-    // Empty lists, and lists of sample values; see TestValues.ofType().
+    // Empty lists, and lists of sample values; see Type.stressTestValues.
     addAll(simpleLists)
 
     // A list of compounds (if enabled), some of which have more lists inside them.
@@ -28,7 +28,7 @@ internal fun listValues(includeCompounds: Boolean = true) = buildList {
  * This includes an empty list for each [Type], with the list's [contentType][TagList.contentType]
  * set to that type. This includes an empty list for [Type.LIST] and [Type.COMPOUND].
  *
- * This also includes a list containing the sample [values][TestValues.ofType] for each type,
+ * This also includes a list containing the sample [values][Type.stressTestValues] for each type,
  * excluding [Type.LIST] and [Type.COMPOUND].
  */
 private val simpleLists: Array<TagList>
@@ -38,7 +38,7 @@ private val simpleLists: Array<TagList>
 
         // Add a list with each of our test/sample values for each type, besides lists & compounds.
         for (type in Type.values().filterNot { it == Type.LIST || it == Type.COMPOUND })
-            add(TagList(type, TestValues.ofType<Any>(type)))
+            add(TagList(type, type.stressTestValues))
     }.toTypedArray()
 
 /**

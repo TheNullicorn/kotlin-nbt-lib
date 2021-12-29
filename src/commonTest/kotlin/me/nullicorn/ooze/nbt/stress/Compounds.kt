@@ -54,14 +54,14 @@ private val compoundWithComplexNames
  * A compound with multiple values with each [Type], except for structural types ([Type.LIST] and
  * [Type.COMPOUND]).
  *
- * Values come from [TestValues.ofType].
+ * Values come from [Type.stressTestValues].
  */
 private val simpleCompound
     get() = TagCompound().apply {
         for (type in Type.values()) {
             if (type == Type.LIST || type == Type.COMPOUND) continue
 
-            for ((index, value) in TestValues.ofType<Any>(type).withIndex()) {
+            for ((index, value) in type.stressTestValues.withIndex()) {
                 // e.g. name = "TAG_Byte_0"
                 set(name = type.toString() + "_" + index, type, value)
             }

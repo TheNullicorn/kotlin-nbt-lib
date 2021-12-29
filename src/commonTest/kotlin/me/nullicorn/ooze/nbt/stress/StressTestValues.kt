@@ -2,12 +2,12 @@ package me.nullicorn.ooze.nbt.stress
 
 import me.nullicorn.ooze.nbt.Type
 
-internal object TestValues {
-    /**
-     * Provides stress-testing values for a tag with the supplied [type].
-     */
-    @Suppress("UNCHECKED_CAST")
-    fun <T> ofType(type: Type): Array<T> = when (type) {
+/**
+ * Provides stress-testing values to be used with tags using the current [Type].
+ */
+@Suppress("UNCHECKED_CAST")
+internal val Type.stressTestValues: Array<Any>
+    get() = when (this) {
         Type.BYTE -> byteValues
         Type.SHORT -> shortValues
         Type.INT -> intValues
@@ -20,6 +20,5 @@ internal object TestValues {
         Type.STRING -> stringValues
         Type.LIST -> listValues(includeCompounds = true)
         Type.COMPOUND -> compoundValues(includeLists = true)
-        else -> throw IllegalArgumentException("No stress-test values for type: $type")
-    } as Array<T>
-}
+        else -> throw IllegalArgumentException("No stress-test values for type: $this")
+    } as Array<Any>
