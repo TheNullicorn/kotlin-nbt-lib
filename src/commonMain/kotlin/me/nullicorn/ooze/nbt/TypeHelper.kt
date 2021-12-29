@@ -15,7 +15,7 @@ package me.nullicorn.ooze.nbt
  */
 
 /**
- * The class to be used by values for
+ * The class to be used by values of the current type.
  */
 internal val Type.runtimeType
     get() = when (this) {
