@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.6.20-M1-23"
+    id("io.kotest.multiplatform") version "5.0.3"
 }
 
 group = "me.nullicorn.ooze"
@@ -11,6 +12,8 @@ repositories {
 }
 
 kotlin {
+    val kotestVersion = "5.0.3"
+
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "1.8"
@@ -39,7 +42,10 @@ kotlin {
         val commonMain by getting {}
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
+                implementation("io.kotest:kotest-runner-junit5:$kotestVersion")
+                implementation("io.kotest:kotest-assertions-core:$kotestVersion")
+                implementation("io.kotest:kotest-framework-engine:$kotestVersion")
+                implementation("io.kotest:kotest-framework-datatest:$kotestVersion")
             }
         }
 
