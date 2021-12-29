@@ -38,7 +38,7 @@ private val simpleLists: Array<TagList>
 
         // Add a list with each of our test/sample values for each type, besides lists & compounds.
         for (type in Type.values().filterNot { it == Type.LIST || it == Type.COMPOUND })
-            add(TagList(type, type.stressTestValues))
+            add(TagList(type, *type.stressTestValues))
     }.toTypedArray()
 
 /**
@@ -46,7 +46,7 @@ private val simpleLists: Array<TagList>
  */
 private val listOfLists: TagList
     get() = TagList(Type.LIST).apply {
-        addAll(simpleLists)
+        addAll(*simpleLists)
     }
 
 /**
