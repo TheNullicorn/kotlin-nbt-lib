@@ -246,18 +246,28 @@ class TagCompound(vararg entries: Entry) {
     /**
      * Retrieves the value of a list tag with a specific [name].
      *
-     * If a non-null [contentType] is provided, then a match will only be returned if the
-     * [names][name] matches, the entry is a [list][Type.LIST], *and* the
-     * [contentTypes][TagList.contentType] match.
-     *
-     * If [contentType] is not provided or is `null`, the only criteria is that the [names][name]
-     * match and the match is a [list][Type.LIST]. The returned list may have any
-     * [contentType][TagList.contentType].
-     *
+     * This function is equivalent to
+     * ```kotlin
+     * get(name, Type.LIST) as? TagList
+     * ```
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getList(name: String, contentType: Type? = null) = entries.firstOrNull {
+    fun getList(name: String) = get(name, Type.LIST) as? TagList
+
+    /**
+     * Retrieves the value of a list tag with a specific [name].
+     *
+     * A match will only be returned if the [names][name] matches, the entry is a [list][Type.LIST],
+     * *and* the [contentTypes][TagList.contentType] match.
+     *
+     * If only [name] matters, use [getList].
+     *
+     * The general contract of [get] also applies to this method.
+     * @see[get]
+     * @see[getList]
+     */
+    fun getListOf(contentType: Type, name: String) = entries.firstOrNull {
         it.name == name
                 && it.type == Type.LIST
                 && it.value is TagList
