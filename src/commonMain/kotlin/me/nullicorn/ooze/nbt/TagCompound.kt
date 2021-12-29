@@ -7,7 +7,9 @@ import kotlin.js.JsExport
  * itself).
  */
 @JsExport
-class TagCompound internal constructor(private val entries: MutableSet<Entry>) {
+class TagCompound(vararg entries: Entry) {
+
+    private val entries = mutableSetOf(*entries)
 
     /**
      * The number of entries in the compound.
