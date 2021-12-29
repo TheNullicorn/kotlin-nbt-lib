@@ -16,20 +16,20 @@ class NbtInput internal constructor(private val source: InputSource) {
     @JsName("ofBytes")
     constructor(bytes: ByteArray) : this(ByteArrayInputSource(bytes))
 
-    fun readRootCompound(): TagCompound {
-        val rootType = runUnsafeInput("reading root value's type") { readType() }
+    fun readRootCompound() = when (val rootType = runUnsafeInput("reading root type", ::readType)) {
+        // If the type is null (indicating TAG_End), then the root is considered empty.
+        // Return a compound with no entries.
+        null -> TagCompound()
 
-        return if (rootType == null) {
-            // If the type is null (indicating TAG_End), then the root is considered empty.
-            // Return a compound with no entries.
-            TagCompound(mutableSetOf())
-        } else if (rootType == Type.COMPOUND) {
+        Type.COMPOUND -> {
             // Skip the root compound's name, which is usually empty anyway.
             readString()
             // Return the root compound.
             readCompound()
-        } else {
-            // The root value must be a compound; throw if it isn't.
+        }
+
+        // The root value must be a compound; throw if it isn't.
+        else -> {
             throw MalformedNbtException("Expected a ${Type.COMPOUND} as root, not $rootType")
         }
     }
@@ -243,7 +243,7 @@ class NbtInput internal constructor(private val source: InputSource) {
             entries.add(Entry(type, name, value))
         }
 
-        return TagCompound(entries.toMutableSet())
+        return TagCompound(*entries.toTypedArray())
     }
 
     /**
