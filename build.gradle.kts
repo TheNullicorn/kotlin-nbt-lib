@@ -50,6 +50,7 @@ kotlin {
         }
 
         val jvmMain by getting {}
+        val jvmTest by getting {}
 
         val jsMain by getting {
             dependencies {
@@ -59,5 +60,6 @@ kotlin {
                 implementation(npm("@types/pako", "1.0.3", generateExternals = true))
             }
         }
+        val jsTest by getting {}
     }
 }
