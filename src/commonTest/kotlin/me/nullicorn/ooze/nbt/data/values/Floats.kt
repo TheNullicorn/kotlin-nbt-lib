@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.stress
+package me.nullicorn.ooze.nbt.data.values
 
 internal val floatValues: Array<Float>
     get() = floatArrayOf(

@@ -12,15 +12,34 @@ import kotlin.js.JsExport
  * @throws[IllegalArgumentException] if the [value]'s class is incorrect, given the supplied [type].
  */
 @JsExport
-data class Entry(
+class Entry(
     val type: Type,
     val name: String,
-    val value: Any,
+    value: Any,
 ) {
+    /**
+     * The contents of the tag.
+     */
+    val value: Any
+
     init {
-        // Make sure the value's class matches the one for the defined type.
-        require(type.runtimeType.isInstance(value)) {
-            "${value::class} is not allowed for a $type tag (expected ${type.runtimeType})"
+        this.value = if (value !is Number) {
+            // Make sure the value's class matches the one for the defined type.
+            require(type.runtimeType.isInstance(value)) {
+                "${value::class} is not allowed for a $type tag (expected ${type.runtimeType})"
+            }
+            value
+
+        } else when (type) {
+            // JS doesn't differentiate between numeric types, so we manually cast numbers to the
+            // correct type in case they aren't already.
+            Type.BYTE -> value.toByte()
+            Type.SHORT -> value.toShort()
+            Type.INT -> value.toInt()
+            Type.LONG -> value.toLong()
+            Type.FLOAT -> value.toFloat()
+            Type.DOUBLE -> value.toDouble()
+            else -> throw IllegalArgumentException("Numeric value $value is not allowed for $type")
         }
     }
 
@@ -29,84 +48,84 @@ data class Entry(
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.BYTE].
      */
-    val byteValue get() = asType<Byte>(Type.BYTE)
+    val asByte get() = asType<Byte>(Type.BYTE)
 
     /**
      * The entry's [value], cast to a short.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.SHORT].
      */
-    val shortValue get() = asType<Short>(Type.SHORT)
+    val asShort get() = asType<Short>(Type.SHORT)
 
     /**
      * The entry's [value], cast to an int.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.INT].
      */
-    val intValue get() = asType<Int>(Type.INT)
+    val asInt get() = asType<Int>(Type.INT)
 
     /**
      * The entry's [value], cast to a long.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.LONG].
      */
-    val longValue get() = asType<Long>(Type.LONG)
+    val asLong get() = asType<Long>(Type.LONG)
 
     /**
      * The entry's [value], cast to a float.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.FLOAT].
      */
-    val floatValue get() = asType<Float>(Type.FLOAT)
+    val asFloat get() = asType<Float>(Type.FLOAT)
 
     /**
      * The entry's [value], cast to a double.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.DOUBLE].
      */
-    val doubleValue get() = asType<Double>(Type.DOUBLE)
+    val asDouble get() = asType<Double>(Type.DOUBLE)
 
     /**
      * The entry's [value], cast to a byte array.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.BYTE_ARRAY].
      */
-    val byteArrayValue get() = asType<ByteArray>(Type.BYTE_ARRAY)
+    val asByteArray get() = asType<ByteArray>(Type.BYTE_ARRAY)
 
     /**
      * The entry's [value], cast to an int array.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.INT_ARRAY].
      */
-    val intArrayValue get() = asType<IntArray>(Type.INT_ARRAY)
+    val asIntArray get() = asType<IntArray>(Type.INT_ARRAY)
 
     /**
      * The entry's [value], cast to a long array.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.LONG_ARRAY].
      */
-    val longArrayValue get() = asType<LongArray>(Type.LONG_ARRAY)
+    val asLongArray get() = asType<LongArray>(Type.LONG_ARRAY)
 
     /**
      * The entry's [value], cast to a string.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.STRING].
      */
-    val stringValue get() = asType<String>(Type.STRING)
+    val asString get() = asType<String>(Type.STRING)
 
     /**
      * The entry's [value], cast to a list.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.LIST].
      */
-    val listValue get() = asType<TagList>(Type.LIST)
+    val asList get() = asType<TagList>(Type.LIST)
 
     /**
      * The entry's [value], cast to a compound.
      *
      * @throws[IllegalStateException] if the entry's [type] is not [Type.COMPOUND].
      */
-    val compoundValue get() = asType<TagCompound>(Type.COMPOUND)
+    val asCompound get() = asType<TagCompound>(Type.COMPOUND)
 
     private inline fun <reified T> asType(type: Type): T {
         check(this.type == type) {
@@ -135,9 +154,5 @@ data class Entry(
         return true
     }
 
-    override fun hashCode(): Int {
-        var result = type.hashCode()
-        result = 31 * result + name.hashCode()
-        return result
-    }
+    override fun hashCode() = 31 * type.hashCode() + name.hashCode()
 }

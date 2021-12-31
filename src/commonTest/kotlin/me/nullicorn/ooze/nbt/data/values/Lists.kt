@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.stress
+package me.nullicorn.ooze.nbt.data.values
 
 import me.nullicorn.ooze.nbt.TagCompound
 import me.nullicorn.ooze.nbt.TagList

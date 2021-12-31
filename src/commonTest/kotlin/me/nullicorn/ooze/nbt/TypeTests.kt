@@ -1,38 +1,32 @@
 package me.nullicorn.ooze.nbt
 
-import io.kotest.core.spec.style.WordSpec
+import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
+import me.nullicorn.ooze.nbt.data.Types
 
-class TypeTests : WordSpec({
-    withData(
-        Type.BYTE identifiedBy 1,
-        Type.SHORT identifiedBy 2,
-        Type.INT identifiedBy 3,
-        Type.LONG identifiedBy 4,
-        Type.FLOAT identifiedBy 5,
-        Type.DOUBLE identifiedBy 6,
-        Type.BYTE_ARRAY identifiedBy 7,
-        Type.STRING identifiedBy 8,
-        Type.LIST identifiedBy 9,
-        Type.COMPOUND identifiedBy 10,
-        Type.INT_ARRAY identifiedBy 11,
-        Type.LONG_ARRAY identifiedBy 12,
-    ) { (type, identifier) ->
-        "Type.identifier" should {
-            "return the type's identifying byte" {
+class TypeTests : ShouldSpec({
+    context("Type.identifier") {
+        should("return the type's identifying byte") {
+            withData(Types.withIdentifier) { (type, identifier) ->
                 type.identifier shouldBe identifier
             }
         }
+    }
 
-        "Type.fromIdentifier()" should {
-            "return the type associated with the identifier" {
+    context("Type.fromIdentifier") {
+        should("return the type associated with the identifier") {
+            withData(Types.withIdentifier) { (type, identifier) ->
                 Type.fromIdentifier(identifier) shouldBe type
             }
         }
     }
+
+    context("Type.toString") {
+        should("return the standard name for the NBT type") {
+            withData(Types.withName) { (type, name) ->
+                type.toString() shouldBe name
+            }
+        }
+    }
 })
-
-private data class IdentifiedType(val type: Type, val identifier: Byte)
-
-private infix fun Type.identifiedBy(identifier: Byte) = IdentifiedType(this, identifier)
