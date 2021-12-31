@@ -8,6 +8,7 @@ import kotlin.js.JsExport
  * @param[contentType] The NBT type shared by all elements in the list.
  */
 @JsExport
+@Suppress("NON_EXPORTABLE_TYPE") // See comment on iterator().
 class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
 
     private val elements: MutableList<Any> = mutableListOf(*elements)
@@ -196,6 +197,10 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      */
     fun containsAll(vararg values: Any) = elements.containsAll(values.toSet())
 
+    // Suppressed because iterator() doesn't get exported to JS anyway.
+    // - This is intended for JVM users at the moment.
+    // - JS users can still iterate using [size] and [get].
+    @Suppress("NON_EXPORTABLE_TYPE")
     override fun iterator() = elements.iterator()
 
     ///////////////////////////////////////////////////////////////////////////
@@ -407,7 +412,7 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
             val otherElement = other.elements[i]
             if (element == otherElement) continue
 
-            // Either the elements simply aren't equal, or they are arrays and we need to use the
+            // Either the elements simply aren't equal, or they are arrays, and we need to use the
             // appropriate method.
             val areEqual = when (element) {
                 is ByteArray -> otherElement is ByteArray && element.contentEquals(otherElement)

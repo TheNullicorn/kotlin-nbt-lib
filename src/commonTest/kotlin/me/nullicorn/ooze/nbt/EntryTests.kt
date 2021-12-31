@@ -63,6 +63,7 @@ class EntryTests : ShouldSpec({
                 val entry = Entry(type, Names.shouldntThrow, Values.oneForType(type))
 
                 entry.type shouldBe type
+                entry.component2() shouldBe type
             }
         }
     }
@@ -73,6 +74,7 @@ class EntryTests : ShouldSpec({
                 val entry = Entry(Type.BYTE, name, 0)
 
                 entry.name shouldBe name
+                entry.component1() shouldBe name
             }
         }
     }
@@ -83,6 +85,7 @@ class EntryTests : ShouldSpec({
                 val entry = Entry(type, Names.shouldntThrow, value)
 
                 entry.value shouldBe value
+                entry.component3() shouldBe value
             }
         }
     }

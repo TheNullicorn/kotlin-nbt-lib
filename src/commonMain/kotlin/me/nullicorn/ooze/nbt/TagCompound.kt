@@ -1,13 +1,15 @@
 package me.nullicorn.ooze.nbt
 
 import kotlin.js.JsExport
+import kotlin.js.JsName
 
 /**
  * An unordered set of NBT tags, each with a unique name within the current scope (the compound
  * itself).
  */
 @JsExport
-class TagCompound(vararg entries: Entry) {
+@Suppress("NON_EXPORTABLE_TYPE")
+class TagCompound(vararg entries: Entry) : Iterable<Entry> {
 
     private val entries = mutableSetOf(*entries)
 
@@ -57,8 +59,8 @@ class TagCompound(vararg entries: Entry) {
     /**
      * Retrieves an entry in the compound with a specific [name].
      *
-     * If the type is known ahead of time, it is recommended to use one of the type-specific
-     * getters this class offers, which take care of type checking and casting automatically.
+     * Since the [type] is known ahead of time, it is recommended to use one of the type-specific
+     * getters this class offers, which take care of type checking and casting under the hood.
      * - [getByte] for [bytes][Type.BYTE]
      * - [getShort] for [shorts][Type.SHORT]
      * - [getInt] for [ints][Type.INT]
@@ -73,14 +75,21 @@ class TagCompound(vararg entries: Entry) {
      * - [getCompound] for inner [compounds][Type.COMPOUND]
      *
      * @param[name] The entry's unique identifier within the compound.
-     * @param[type] The expected [Type] for the entry to have. If `null`, all types will be
-     * considered.
+     * @param[type] The expected [Type] for the entry to have.
      * @return the entry's [value][Entry.value], or `null` if the compound has no entry with the
-     * [name] and (optionally) [type] supplied.
+     * [name] **and** (optionally) [type] supplied.
      */
-    operator fun get(name: String, type: Type? = null) = entries.firstOrNull {
-        it.name == name && (type == null || it.type == type)
-    }?.value
+    operator fun get(name: String, type: Type) = getEntry(name, type)?.value
+
+    /**
+     * Retrieves an entry in the compound with a specific [name].
+     *
+     * @param[name] The entry's unique identifier within the compound.
+     * @return the entry's [value][Entry.value], or `null` if the compound has no entry with that
+     * [name].
+     */
+    @JsName("getAny")
+    operator fun get(name: String) = getEntry(name, type = null)?.value
 
     /**
      * Assigns a [value] to a tag under a specific [name] in the compound.
@@ -96,6 +105,7 @@ class TagCompound(vararg entries: Entry) {
         entries.removeAll { it.name == name }
         // Insert the new entry.
         entries.add(Entry(type, name, value))
+        // (validity of type & value will be checked by Entry's constructor)
     }
 
     /**
@@ -106,6 +116,21 @@ class TagCompound(vararg entries: Entry) {
      * supplied
      */
     fun remove(name: String) = entries.removeAll { it.name == name }
+
+    /**
+     * @return The first [entry][entries] in the compound with the supplied [name]. If [type] is not
+     * `null`, then the entry will only be returned if its type also matches the one supplied.
+     * Otherwise `null` is returned.
+     */
+    private fun getEntry(name: String, type: Type? = null): Entry? = entries.firstOrNull {
+        it.name == name && (type == null || it.type == type)
+    }
+
+    // Suppressed because iterator() doesn't get exported to JS anyway.
+    // - This is intended for JVM users at the moment.
+    // - JS users can still iterate using [names] and [get].
+    @Suppress("NON_EXPORTABLE_TYPE")
+    override fun iterator() = entries.iterator()
 
     ///////////////////////////////////////////////////////////////////////////
     // Type-Specific Getters
@@ -121,7 +146,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getByte(name: String) = get(name, Type.BYTE) as? Byte
+    fun getByte(name: String) = getEntry(name, Type.BYTE)?.asByte
 
     /**
      * Retrieves the value of a short tag with a specific [name].
@@ -133,7 +158,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getShort(name: String) = get(name, Type.SHORT) as? Short
+    fun getShort(name: String) = getEntry(name, Type.SHORT)?.asShort
 
     /**
      * Retrieves the value of an int tag with a specific [name].
@@ -145,7 +170,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getInt(name: String) = get(name, Type.INT) as? Int
+    fun getInt(name: String) = getEntry(name, Type.INT)?.asInt
 
     /**
      * Retrieves the value of a long tag with a specific [name].
@@ -157,7 +182,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getLong(name: String) = get(name, Type.LONG) as? Long
+    fun getLong(name: String) = getEntry(name, Type.LONG)?.asLong
 
     /**
      * Retrieves the value of a float tag with a specific [name].
@@ -169,7 +194,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getFloat(name: String) = get(name, Type.FLOAT) as? Float
+    fun getFloat(name: String) = getEntry(name, Type.FLOAT)?.asFloat
 
     /**
      * Retrieves the value of a double tag with a specific [name].
@@ -181,7 +206,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getDouble(name: String) = get(name, Type.DOUBLE) as? Double
+    fun getDouble(name: String) = getEntry(name, Type.DOUBLE)?.asDouble
 
     /**
      * Retrieves the value of a byte array tag with a specific [name].
@@ -193,7 +218,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getByteArray(name: String) = get(name, Type.BYTE_ARRAY) as? ByteArray
+    fun getByteArray(name: String) = getEntry(name, Type.BYTE_ARRAY)?.asByteArray
 
     /**
      * Retrieves the value of an int array tag with a specific [name].
@@ -205,7 +230,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getIntArray(name: String) = get(name, Type.INT_ARRAY) as? IntArray
+    fun getIntArray(name: String) = getEntry(name, Type.INT_ARRAY)?.asIntArray
 
     /**
      * Retrieves the value of a long array tag with a specific [name].
@@ -217,7 +242,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getLongArray(name: String) = get(name, Type.LONG_ARRAY) as? LongArray
+    fun getLongArray(name: String) = getEntry(name, Type.LONG_ARRAY)?.asLongArray
 
     /**
      * Retrieves the value of a string tag with a specific [name].
@@ -229,7 +254,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getString(name: String) = get(name, Type.STRING) as? String
+    fun getString(name: String) = getEntry(name, Type.STRING)?.asString
 
     /**
      * Retrieves the value of a compound tag with a specific [name], inside the current compound.
@@ -241,7 +266,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getCompound(name: String) = get(name, Type.COMPOUND) as? TagCompound
+    fun getCompound(name: String) = getEntry(name, Type.COMPOUND)?.asCompound
 
     /**
      * Retrieves the value of a list tag with a specific [name].
@@ -253,7 +278,7 @@ class TagCompound(vararg entries: Entry) {
      * The general contract of [get] also applies to this method.
      * @see[get]
      */
-    fun getList(name: String) = get(name, Type.LIST) as? TagList
+    fun getList(name: String) = getEntry(name, Type.LIST)?.asList
 
     /**
      * Retrieves the value of a list tag with a specific [name].
@@ -270,9 +295,8 @@ class TagCompound(vararg entries: Entry) {
     fun getListOf(contentType: Type, name: String) = entries.firstOrNull {
         it.name == name
                 && it.type == Type.LIST
-                && it.value is TagList
-                && it.value.contentType == contentType
-    }?.value
+                && it.asList.contentType == contentType
+    }?.asList
 
     ///////////////////////////////////////////////////////////////////////////
     // Type-Specific Setters

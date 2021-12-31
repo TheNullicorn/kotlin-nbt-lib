@@ -23,23 +23,10 @@ class Entry(
     val value: Any
 
     init {
-        this.value = if (value !is Number) {
-            // Make sure the value's class matches the one for the defined type.
-            require(type.runtimeType.isInstance(value)) {
-                "${value::class} is not allowed for a $type tag (expected ${type.runtimeType})"
-            }
-            value
-
-        } else when (type) {
-            // JS doesn't differentiate between numeric types, so we manually cast numbers to the
-            // correct type in case they aren't already.
-            Type.BYTE -> value.toByte()
-            Type.SHORT -> value.toShort()
-            Type.INT -> value.toInt()
-            Type.LONG -> value.toLong()
-            Type.FLOAT -> value.toFloat()
-            Type.DOUBLE -> value.toDouble()
-            else -> throw IllegalArgumentException("Numeric value $value is not allowed for $type")
+        this.value = try {
+            value asNbt type
+        } catch (cause: IllegalStateException) {
+            throw IllegalArgumentException("Entry value is not a $type: $value", cause)
         }
     }
 
@@ -126,6 +113,27 @@ class Entry(
      * @throws[IllegalStateException] if the entry's [type] is not [Type.COMPOUND].
      */
     val asCompound get() = asType<TagCompound>(Type.COMPOUND)
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Destructuring Functions
+    //
+    // e.g. allows for: (name, type, value) = Entry("", Type.BYTE, 0)
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * The entry's [name].
+     */
+    operator fun component1() = name
+
+    /**
+     * The entry's [type]
+     */
+    operator fun component2() = type
+
+    /**
+     * The entry's [value].
+     */
+    operator fun component3() = value
 
     private inline fun <reified T> asType(type: Type): T {
         check(this.type == type) {
