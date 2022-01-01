@@ -39,5 +39,17 @@ object Values {
         }
     }.toList().toSet()
 
-    fun oneForType(type: Type) = forType(type).first { it.first == type }.second
+    fun oneOf(type: Type): Any = forType(type)
+        .first { it.first == type }
+        .second
+
+    fun oneOfEach(vararg types: Type): Set<Pair<Type, Any>> = forTypes(*types)
+        .distinctBy { it.first }
+        .filter { types.contains(it.first) }
+        .toSet()
+
+    val oneOfEvery: Set<Pair<Type, Any>>
+        get() = forTypes(*Type.values())
+            .distinctBy { it.first }
+            .toSet()
 }

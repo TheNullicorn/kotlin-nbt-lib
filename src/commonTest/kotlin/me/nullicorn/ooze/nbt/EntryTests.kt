@@ -5,6 +5,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
+import me.nullicorn.ooze.nbt.data.Entries
 import me.nullicorn.ooze.nbt.data.Names
 import me.nullicorn.ooze.nbt.data.Types
 import me.nullicorn.ooze.nbt.data.Values
@@ -31,6 +32,8 @@ class EntryTests : ShouldSpec({
                 }
             }
         }
+
+        // TODO: 12/31/21 Should accept any array, given an array type (TAG_Byte_Array, etc).
 
         should("throw if non-numeric values are used, given a numeric type") {
             // Check for each numeric type.
@@ -60,7 +63,7 @@ class EntryTests : ShouldSpec({
     context("Entry.type") {
         should("be equal to the type provided in the constructor") {
             withData(Types.all) { type ->
-                val entry = Entry(type, Names.shouldntThrow, Values.oneForType(type))
+                val entry = Entry(type, Names.shouldntThrow, Values.oneOf(type))
 
                 entry.type shouldBe type
                 entry.component2() shouldBe type
@@ -90,5 +93,21 @@ class EntryTests : ShouldSpec({
         }
     }
 
-    // TODO: 12/30/21 Tests for type-specific getters (asByte, asIntArray, asCompound, etc)
+    context("Entry.as[Type]") {
+        withData(Types.all) { type ->
+            val entry = Entry(type, Names.shouldntThrow, Values.oneOf(type))
+
+            should("return the entry's value for the correct getter") {
+                Entries.getterFor(type).get(entry) shouldBe entry.value
+            }
+
+            should("throw if the wrong getter is used") {
+                withData(Types.allExcept(type)) { wrongType ->
+                    shouldThrow<IllegalStateException> {
+                        Entries.getterFor(wrongType).get(entry)
+                    }
+                }
+            }
+        }
+    }
 })

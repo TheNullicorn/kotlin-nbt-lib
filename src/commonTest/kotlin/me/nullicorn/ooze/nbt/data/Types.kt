@@ -52,4 +52,8 @@ object Types {
                 else -> throw IllegalStateException("No known name for type: ${type.name}")
             }
         }.map { it.key to "TAG_${it.value}" }.toSet()
+
+    fun allExcept(vararg excludes: Type) = all
+        .filterNot { excludes.contains(it) }
+        .toSet()
 }
