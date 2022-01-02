@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.data
+package me.nullicorn.ooze.nbt.testutil.data
 
 import me.nullicorn.ooze.nbt.Entry
 import me.nullicorn.ooze.nbt.Type

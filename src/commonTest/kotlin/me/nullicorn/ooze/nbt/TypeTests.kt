@@ -3,7 +3,7 @@ package me.nullicorn.ooze.nbt
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
-import me.nullicorn.ooze.nbt.data.Types
+import me.nullicorn.ooze.nbt.testutil.data.Types
 
 class TypeTests : ShouldSpec({
     context("Type.identifier") {

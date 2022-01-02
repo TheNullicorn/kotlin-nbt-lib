@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.data.values
+package me.nullicorn.ooze.nbt.testutil.data.values
 
 internal val intArrayValues: Array<IntArray>
     get() = arrayOf(

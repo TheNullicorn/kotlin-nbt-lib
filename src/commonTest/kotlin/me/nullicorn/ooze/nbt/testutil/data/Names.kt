@@ -1,7 +1,7 @@
-package me.nullicorn.ooze.nbt.data
+package me.nullicorn.ooze.nbt.testutil.data
 
 import io.kotest.datatest.withData
-import me.nullicorn.ooze.nbt.data.values.stringValues
+import me.nullicorn.ooze.nbt.testutil.data.values.stringValues
 
 object Names {
     val all: Set<String> get() = stringValues.toSet()

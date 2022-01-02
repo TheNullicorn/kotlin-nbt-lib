@@ -11,11 +11,7 @@ import kotlin.js.JsExport
 @Suppress("NON_EXPORTABLE_TYPE") // See comment on iterator().
 class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
 
-    private val elements: MutableList<Any> = mutableListOf(*elements)
-
-    init {
-        checkValues(elements)
-    }
+    private val elements: MutableList<Any> = checkValues(elements).toMutableList()
 
     /**
      * The number of elements in the list.
@@ -232,11 +228,10 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      * @throws[IllegalArgumentException] if the value's class does not match the one required by the
      * [contentType].
      */
-    private fun <T : Any> checkValue(value: T): T {
-        require(contentType.runtimeType.isInstance(value)) {
-            "Expected a ${contentType.runtimeType} object for $contentType, not a ${value::class}"
-        }
-        return value
+    private inline fun <reified T : Any> checkValue(value: T): T = try {
+        value asNbt contentType
+    } catch (cause: IllegalStateException) {
+        throw IllegalArgumentException(cause.message, cause)
     }
 
     /**
@@ -255,7 +250,7 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
 
         // Make sure each value is valid, given the contentType.
         for (value in listOfValues) {
-            checkValue(value)
+            checkValue<Any>(value)
         }
 
         // Return our extracted list, so that different (potentially bad) values can't be injected.

@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.data
+package me.nullicorn.ooze.nbt.testutil.data
 
 import me.nullicorn.ooze.nbt.Type
 import me.nullicorn.ooze.nbt.Type.*
@@ -11,9 +11,22 @@ object Types {
         get() = setOf(BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)
 
     val nonNumeric: Set<Type>
-        get() = Type.values().toMutableSet().apply {
-            removeAll(numeric)
-        }.toSet()
+        get() = Type.values()
+            .toMutableSet()
+            .apply { removeAll(numeric) }
+            .toSet()
+
+    val array: Set<Type>
+        get() = setOf(BYTE_ARRAY, INT_ARRAY, LONG_ARRAY)
+
+    val nonArray: Set<Type>
+        get() = Type.values()
+            .toMutableSet()
+            .apply { removeAll(array) }
+            .toSet()
+
+    val strict: Set<Type>
+        get() = setOf(STRING, LIST, COMPOUND)
 
     val withIdentifier: Set<Pair<Type, Byte>>
         get() = Type.values().associateWith<Type, Byte> { type ->
@@ -56,4 +69,14 @@ object Types {
     fun allExcept(vararg excludes: Type) = all
         .filterNot { excludes.contains(it) }
         .toSet()
+
+    fun compatibleWith(type: Type): Set<Type> = when (type) {
+        BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> numeric
+        BYTE_ARRAY, INT_ARRAY, LONG_ARRAY -> array
+        else -> setOf(type)
+    }
+
+    fun incompatibleWith(type: Type): Set<Type> = allExcept(
+        *compatibleWith(type).toTypedArray()
+    )
 }

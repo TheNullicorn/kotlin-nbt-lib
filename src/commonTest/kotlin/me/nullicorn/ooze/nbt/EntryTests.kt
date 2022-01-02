@@ -3,58 +3,30 @@ package me.nullicorn.ooze.nbt
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.core.spec.style.scopes.addTest
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
-import me.nullicorn.ooze.nbt.data.Entries
-import me.nullicorn.ooze.nbt.data.Names
-import me.nullicorn.ooze.nbt.data.Types
-import me.nullicorn.ooze.nbt.data.Values
+import me.nullicorn.ooze.nbt.testutil.data.Entries
+import me.nullicorn.ooze.nbt.testutil.data.Names
+import me.nullicorn.ooze.nbt.testutil.data.Types
+import me.nullicorn.ooze.nbt.testutil.data.Values
+import me.nullicorn.ooze.nbt.testutil.withCompatibleValues
+import me.nullicorn.ooze.nbt.testutil.withIncompatibleValues
+import me.nullicorn.ooze.nbt.testutil.withTypes
 
 class EntryTests : ShouldSpec({
     // Tests for the primary constructor.
     context("Entry()") {
-        should("accept values with the correct class, given the type") {
-            withData(Values.forAllTypes()) { (type, value) ->
+        withTypes("type") { type ->
+            withCompatibleValues(type) { compatibleValue, _ ->
                 shouldNotThrow<IllegalArgumentException> {
-                    Entry(type, Names.shouldntThrow, value)
+                    Entry(type, Names.shouldntThrow, compatibleValue)
                 }
             }
-        }
 
-        should("accept any number, given a numeric type") {
-            // Check for each numeric type.
-            withData(Types.numeric) { numericType ->
-                // Check against all numeric values we have.
-                withData(Values.forNumericTypes()) { (_, numericValue) ->
-                    shouldNotThrow<IllegalArgumentException> {
-                        Entry(numericType, Names.shouldntThrow, numericValue)
-                    }
-                }
-            }
-        }
-
-        // TODO: 12/31/21 Should accept any array, given an array type (TAG_Byte_Array, etc).
-
-        should("throw if non-numeric values are used, given a numeric type") {
-            // Check for each numeric type.
-            withData(Types.numeric) { numericType ->
-                // Check against all non-numeric values we have.
-                withData(Values.forNonNumericTypes()) { (_, nonNumericValue) ->
-                    shouldThrow<IllegalArgumentException> {
-                        Entry(numericType, Names.shouldThrow, nonNumericValue)
-                    }
-                }
-            }
-        }
-
-        should("throw throw if numeric values are used, given a non-numeric type") {
-            // Check for each non-numeric type.
-            withData(Types.nonNumeric) { nonNumericType ->
-                // Check against all numeric values we have.
-                withData(Values.forNumericTypes()) { (_, numericValue) ->
-                    shouldThrow<IllegalArgumentException> {
-                        Entry(nonNumericType, Names.shouldThrow, numericValue)
-                    }
+            withIncompatibleValues(type) { incompatibleValue ->
+                shouldThrow<IllegalArgumentException> {
+                    Entry(type, Names.shouldThrow, incompatibleValue)
                 }
             }
         }
@@ -83,26 +55,28 @@ class EntryTests : ShouldSpec({
     }
 
     context("Entry.value") {
-        should("be equal to the value provided in the constructor") {
-            withData(Values.forAllTypes()) { (type, value) ->
-                val entry = Entry(type, Names.shouldntThrow, value)
+        context("should be equal to the value provided in the constructor") {
+            withTypes("type") { type ->
+                withCompatibleValues(type) { value, convertedValue ->
+                    val entry = Entry(type, Names.shouldntThrow, value)
 
-                entry.value shouldBe value
-                entry.component3() shouldBe value
+                    entry.value shouldBe convertedValue
+                    entry.component3() shouldBe convertedValue
+                }
             }
         }
     }
 
     context("Entry.as[Type]") {
-        withData(Types.all) { type ->
+        withTypes("type") { type ->
             val entry = Entry(type, Names.shouldntThrow, Values.oneOf(type))
 
-            should("return the entry's value for the correct getter") {
+            should("return the entry's value when the $type getter is used") {
                 Entries.getterFor(type).get(entry) shouldBe entry.value
             }
 
-            should("throw if the wrong getter is used") {
-                withData(Types.allExcept(type)) { wrongType ->
+            for (wrongType in Types.allExcept(type)) {
+                should("throw when the $wrongType getter is used") {
                     shouldThrow<IllegalStateException> {
                         Entries.getterFor(wrongType).get(entry)
                     }

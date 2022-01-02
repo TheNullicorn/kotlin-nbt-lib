@@ -24,7 +24,7 @@ class Entry(
 
     init {
         this.value = try {
-            value asNbt type
+            value asNbtAny type
         } catch (cause: IllegalStateException) {
             throw IllegalArgumentException("Entry value is not a $type: $value", cause)
         }

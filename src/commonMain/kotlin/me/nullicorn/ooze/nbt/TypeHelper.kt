@@ -61,47 +61,47 @@ internal val Type.runtimeType
  * - [Type.LIST] as [TagList]
  * - [Type.COMPOUND] as [TagCompound]
  *
- * @throws[IllegalStateException] if the current value is not the correct class for the NBT [type],
+ * @throws[IllegalStateException] if the current value is not the correct class for the NBT [expectedType],
  * and no conersion is available.
  */
-internal inline infix fun <reified T> Any.asNbt(type: Type): T = when (this) {
+internal inline infix fun <reified T> Any.asNbt(expectedType: Type): T = when (this) {
     /*
      * Implicitly convert numeric types between one another, if necessary.
      */
 
-    is Number -> when (type) {
+    is Number -> when (expectedType) {
         BYTE -> this as? Byte ?: toByte()
         SHORT -> this as? Short ?: toShort()
         INT -> this as? Int ?: toInt()
         LONG -> this as? Long ?: toLong()
         FLOAT -> this as? Float ?: toFloat()
         DOUBLE -> this as? Double ?: toDouble()
-        else -> throw this isWrongFor type
+        else -> throw this isWrongFor expectedType
     }
 
     /*
      * Convert between array types, if necessary.
      */
 
-    is ByteArray -> when (type) {
+    is ByteArray -> when (expectedType) {
         BYTE_ARRAY -> this
         INT_ARRAY -> IntArray(size) { i -> this[i].toInt() }
         LONG_ARRAY -> LongArray(size) { i -> this[i].toLong() }
-        else -> throw this isWrongFor type
+        else -> throw this isWrongFor expectedType
     }
 
-    is IntArray -> when (type) {
+    is IntArray -> when (expectedType) {
         BYTE_ARRAY -> ByteArray(size) { i -> this[i].toByte() }
         INT_ARRAY -> this
         LONG_ARRAY -> LongArray(size) { i -> this[i].toLong() }
-        else -> throw this isWrongFor type
+        else -> throw this isWrongFor expectedType
     }
 
-    is LongArray -> when (type) {
+    is LongArray -> when (expectedType) {
         BYTE_ARRAY -> ByteArray(size) { i -> this[i].toByte() }
         INT_ARRAY -> IntArray(size) { i -> this[i].toInt() }
         LONG_ARRAY -> this
-        else -> throw this isWrongFor type
+        else -> throw this isWrongFor expectedType
     }
 
     /*
@@ -109,10 +109,15 @@ internal inline infix fun <reified T> Any.asNbt(type: Type): T = when (this) {
      */
 
     else -> {
-        if (type.runtimeType.isInstance(this)) this
-        else throw this isWrongFor type
+        if (expectedType.runtimeType.isInstance(this)) this
+        else throw this isWrongFor expectedType
     }
 } as T
+
+/**
+ * Same as [asNbt], but no type parameter is required, and the return type is always [Any].
+ */
+internal infix fun Any.asNbtAny(type: Type): Any = this.asNbt(type)
 
 private infix fun Any.isWrongFor(type: Type) =
     IllegalStateException("Expected ${type.runtimeType} for $type, not ${this::class}")

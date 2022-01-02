@@ -1,18 +1,36 @@
-package me.nullicorn.ooze.nbt.data
+package me.nullicorn.ooze.nbt.testutil.data
 
+import me.nullicorn.ooze.nbt.TagCompound
+import me.nullicorn.ooze.nbt.TagList
 import me.nullicorn.ooze.nbt.Type
 import me.nullicorn.ooze.nbt.Type.*
-import me.nullicorn.ooze.nbt.data.values.*
+import me.nullicorn.ooze.nbt.testutil.data.values.*
+import me.nullicorn.ooze.nbt.testutil.data.values.byteArrayValues
+import me.nullicorn.ooze.nbt.testutil.data.values.byteValues
+import me.nullicorn.ooze.nbt.testutil.data.values.compoundValues
+import me.nullicorn.ooze.nbt.testutil.data.values.doubleValues
+import me.nullicorn.ooze.nbt.testutil.data.values.floatValues
 
 object Values {
 
-    fun forType(type: Type) = forTypes(type)
+    fun forType(type: Type) = forTypes(type).map { it.second }.toSet()
 
-    fun forAllTypes() = forTypes(*Type.values())
+    fun forAllTypes() = forTypes(*values())
 
-    fun forNumericTypes() = forTypes(*Types.numeric.toTypedArray())
+    fun forAllTypesExcept(vararg excluded: Type) = forTypes(*values()
+        .toMutableSet()
+        .apply { removeAll(excluded.toSet()) }
+        .toTypedArray())
 
-    fun forNonNumericTypes() = forTypes(*Types.nonNumeric.toTypedArray())
+    fun forNumericTypes() = forTypes(Types.numeric)
+
+    fun forNonNumericTypes() = forTypes(Types.nonNumeric)
+
+    fun forArrayTypes() = forTypes(Types.array)
+
+    fun forNonArrayTypes() = forTypes(Types.nonArray)
+
+    fun forTypes(types: Iterable<Type>) = forTypes(*types.toSet().toTypedArray())
 
     fun forTypes(vararg types: Type): Set<Pair<Type, Any>> = buildSet {
         // For each included type...
@@ -39,9 +57,7 @@ object Values {
         }
     }.toList().toSet()
 
-    fun oneOf(type: Type): Any = forType(type)
-        .first { it.first == type }
-        .second
+    fun oneOf(type: Type): Any = forType(type).first()
 
     fun oneOfEach(vararg types: Type): Set<Pair<Type, Any>> = forTypes(*types)
         .distinctBy { it.first }
@@ -49,7 +65,7 @@ object Values {
         .toSet()
 
     val oneOfEvery: Set<Pair<Type, Any>>
-        get() = forTypes(*Type.values())
+        get() = forTypes(*values())
             .distinctBy { it.first }
             .toSet()
 }
