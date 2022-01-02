@@ -1,9 +1,10 @@
+@file:Suppress("unused")
+
 package me.nullicorn.ooze.nbt
 
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
-import io.kotest.core.spec.style.scopes.addTest
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import me.nullicorn.ooze.nbt.testutil.data.Entries

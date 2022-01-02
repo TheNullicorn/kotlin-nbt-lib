@@ -12,7 +12,7 @@ object Names {
      *
      * ```"IShouldBeBad"```
      */
-    val shouldThrow = "IShouldBeBad"
+    const val shouldThrow = "IShouldBeBad"
 
     /**
      * A sample name that can be used with tags created for tests that are not meant to throw
@@ -20,7 +20,7 @@ object Names {
      *
      * ```"IShouldBeOkay"```
      */
-    val shouldntThrow = "IShouldBeOkay"
+    const val shouldntThrow = "IShouldBeOkay"
 
     /**
      * A function for naming tests that use [Names.all] via Kotest's [withData] function.

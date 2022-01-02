@@ -7,27 +7,6 @@ object Types {
     val all: Set<Type>
         get() = Type.values().toSet()
 
-    val numeric: Set<Type>
-        get() = setOf(BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)
-
-    val nonNumeric: Set<Type>
-        get() = Type.values()
-            .toMutableSet()
-            .apply { removeAll(numeric) }
-            .toSet()
-
-    val array: Set<Type>
-        get() = setOf(BYTE_ARRAY, INT_ARRAY, LONG_ARRAY)
-
-    val nonArray: Set<Type>
-        get() = Type.values()
-            .toMutableSet()
-            .apply { removeAll(array) }
-            .toSet()
-
-    val strict: Set<Type>
-        get() = setOf(STRING, LIST, COMPOUND)
-
     val withIdentifier: Set<Pair<Type, Byte>>
         get() = Type.values().associateWith<Type, Byte> { type ->
             when (type) {
@@ -70,9 +49,19 @@ object Types {
         .filterNot { excludes.contains(it) }
         .toSet()
 
-    fun compatibleWith(type: Type): Set<Type> = when (type) {
-        BYTE, SHORT, INT, LONG, FLOAT, DOUBLE -> numeric
-        BYTE_ARRAY, INT_ARRAY, LONG_ARRAY -> array
+    /**
+     * All NBT types that represent individual numbers.
+     */
+    private val numeric = setOf(BYTE, SHORT, INT, LONG, FLOAT, DOUBLE)
+
+    /**
+     * All NBT types that represent ordered sequences of numbers.
+     */
+    private val array = setOf(BYTE_ARRAY, INT_ARRAY, LONG_ARRAY)
+
+    fun compatibleWith(type: Type): Set<Type> = when {
+        numeric.contains(type) -> numeric
+        array.contains(type) -> array
         else -> setOf(type)
     }
 

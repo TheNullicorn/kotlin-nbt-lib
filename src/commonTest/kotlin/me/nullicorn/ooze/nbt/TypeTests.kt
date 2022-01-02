@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package me.nullicorn.ooze.nbt
 
 import io.kotest.core.spec.style.ShouldSpec
