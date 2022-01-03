@@ -3,6 +3,7 @@
 This package (and those inside it) are not actual tests; just utilities for the tests in the `nbt`
 package.
 
+- `Config` - Project-wide configuration for Kotest.
 - `Compatibility.kt` - Kotest extensions for data-driven testing using the `data` package.
 - `Converter.kt` - Mimics the library's type-conversion behavior for testing the library's behavior
   in such cases.
