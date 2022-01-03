@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.testutil
+package me.nullicorn.ooze.nbt.test
 
 import me.nullicorn.ooze.nbt.TagCompound
 import me.nullicorn.ooze.nbt.TagList

@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.testutil.data.values
+package me.nullicorn.ooze.nbt.test.data.values
 
 import me.nullicorn.ooze.nbt.Type
 

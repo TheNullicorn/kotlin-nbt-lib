@@ -1,11 +1,12 @@
-package me.nullicorn.ooze.nbt.testutil
+package me.nullicorn.ooze.nbt.test
 
 import io.kotest.core.names.TestName
 import io.kotest.core.spec.style.scopes.ContainerScope
 import io.kotest.core.spec.style.scopes.ShouldSpecContainerScope
 import io.kotest.core.test.TestScope
 import me.nullicorn.ooze.nbt.*
-import me.nullicorn.ooze.nbt.testutil.data.*
+import me.nullicorn.ooze.nbt.test.data.Types
+import me.nullicorn.ooze.nbt.test.data.Values
 
 typealias TestContainer = ShouldSpecContainerScope
 

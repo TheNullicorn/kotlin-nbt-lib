@@ -7,10 +7,10 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
-import me.nullicorn.ooze.nbt.testutil.data.Types
-import me.nullicorn.ooze.nbt.testutil.withCompatibleValues
-import me.nullicorn.ooze.nbt.testutil.withIncompatibleValues
-import me.nullicorn.ooze.nbt.testutil.withTypes
+import me.nullicorn.ooze.nbt.test.data.Types
+import me.nullicorn.ooze.nbt.test.withCompatibleValues
+import me.nullicorn.ooze.nbt.test.withIncompatibleValues
+import me.nullicorn.ooze.nbt.test.withTypes
 
 class TagListTests : ShouldSpec({
     context("TagList.contentType") {
