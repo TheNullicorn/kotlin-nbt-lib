@@ -2,7 +2,7 @@ package me.nullicorn.ooze.nbt.io.codec
 
 import me.nullicorn.ooze.nbt.io.InputException
 import me.nullicorn.ooze.nbt.io.runUnsafeInput
-import me.nullicorn.ooze.nbt.io.source.InputSource
+import me.nullicorn.ooze.nbt.io.source.Source
 
 private const val EACH_SIZE_BYTES = 8
 
@@ -16,7 +16,7 @@ private const val EACH_SIZE_BYTES = 8
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * consume, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.readLongArray(
+internal fun Source.readLongArray(
     length: Int,
     endian: Endianness = Endianness.BIG,
 ): LongArray {
@@ -39,7 +39,7 @@ internal fun InputSource.readLongArray(
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * discard, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.skipLongArray(length: Int) {
+internal fun Source.skipLongArray(length: Int) {
     require(length >= 0) { "Array length cannot be negative ($length)" }
 
     runUnsafeInput("skipping long array") {

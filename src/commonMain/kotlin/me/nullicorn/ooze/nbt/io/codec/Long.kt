@@ -2,7 +2,7 @@ package me.nullicorn.ooze.nbt.io.codec
 
 import me.nullicorn.ooze.nbt.io.InputException
 import me.nullicorn.ooze.nbt.io.runUnsafeInput
-import me.nullicorn.ooze.nbt.io.source.InputSource
+import me.nullicorn.ooze.nbt.io.source.Source
 
 private const val SIZE_BYTES = 8
 
@@ -22,7 +22,7 @@ private val arbitraryLongBuffer by lazy { ByteArray(SIZE_BYTES) }
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * consume, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.readLong(endian: Endianness = Endianness.BIG) =
+internal fun Source.readLong(endian: Endianness = Endianness.BIG) =
     runUnsafeInput("reading long") {
         readArbitrarySizeLong(length = SIZE_BYTES, endian)
     }
@@ -33,7 +33,7 @@ internal fun InputSource.readLong(endian: Endianness = Endianness.BIG) =
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * discard, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.skipLong() = runUnsafeInput("skipping long") {
+internal fun Source.skipLong() = runUnsafeInput("skipping long") {
     skip(SIZE_BYTES)
 }
 
@@ -50,7 +50,7 @@ internal fun InputSource.skipLong() = runUnsafeInput("skipping long") {
  * @throws[IllegalArgumentException] if [length] is less than `0`.
  * @throws[IllegalArgumentException] if [length] is greater than `8`.
  */
-internal fun InputSource.readArbitrarySizeLong(length: Int, endian: Endianness): Long {
+internal fun Source.readArbitrarySizeLong(length: Int, endian: Endianness): Long {
     checkArbitraryLength(length)
 
     val bytes = readToBuffer(arbitraryLongBuffer, offset = 0, length)

@@ -2,7 +2,7 @@ package me.nullicorn.ooze.nbt.io.codec
 
 import me.nullicorn.ooze.nbt.io.InputException
 import me.nullicorn.ooze.nbt.io.runUnsafeInput
-import me.nullicorn.ooze.nbt.io.source.InputSource
+import me.nullicorn.ooze.nbt.io.source.Source
 
 private const val EACH_SIZE_BYTES = 4
 
@@ -16,7 +16,7 @@ private const val EACH_SIZE_BYTES = 4
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * consume, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.readIntArray(length: Int, endian: Endianness = Endianness.BIG): IntArray {
+internal fun Source.readIntArray(length: Int, endian: Endianness = Endianness.BIG): IntArray {
     require(length >= 0) { "Array length cannot be negative ($length)" }
 
     val bytes = runUnsafeInput("reading int array") {
@@ -36,7 +36,7 @@ internal fun InputSource.readIntArray(length: Int, endian: Endianness = Endianne
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * discard, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.skipIntArray(length: Int) {
+internal fun Source.skipIntArray(length: Int) {
     require(length >= 0) { "Array length cannot be negative ($length)" }
 
     runUnsafeInput("skipping int array") {

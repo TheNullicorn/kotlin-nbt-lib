@@ -7,7 +7,7 @@ import me.nullicorn.ooze.nbt.io.runUnsafeInput
  * Provides a sequence of bytes to a consumer, which can decide to [consume][readToBuffer] or
  * [discard][skip] those bytes.
  */
-internal interface InputSource {
+internal interface Source {
 
     /**
      * Consumes the next `n` bytes from the source, copying them to a new array.

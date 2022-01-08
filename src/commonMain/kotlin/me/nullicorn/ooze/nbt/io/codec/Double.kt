@@ -1,6 +1,6 @@
 package me.nullicorn.ooze.nbt.io.codec
 
-import me.nullicorn.ooze.nbt.io.source.InputSource
+import me.nullicorn.ooze.nbt.io.source.Source
 import me.nullicorn.ooze.nbt.io.InputException
 import me.nullicorn.ooze.nbt.io.runUnsafeInput
 
@@ -17,7 +17,7 @@ private const val SIZE_BYTES = 8
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * consume, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.readDouble(endian: Endianness = Endianness.BIG) =
+internal fun Source.readDouble(endian: Endianness = Endianness.BIG) =
     runUnsafeInput("reading double") {
         Double.fromBits(readArbitrarySizeLong(length = SIZE_BYTES, endian))
     }
@@ -28,6 +28,6 @@ internal fun InputSource.readDouble(endian: Endianness = Endianness.BIG) =
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * discard, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.skipDouble() = runUnsafeInput("skipping double") {
+internal fun Source.skipDouble() = runUnsafeInput("skipping double") {
     skip(SIZE_BYTES)
 }

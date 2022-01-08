@@ -5,16 +5,16 @@ import me.nullicorn.ooze.nbt.TagCompound
 import me.nullicorn.ooze.nbt.TagList
 import me.nullicorn.ooze.nbt.Type
 import me.nullicorn.ooze.nbt.io.codec.*
-import me.nullicorn.ooze.nbt.io.source.ByteArrayInputSource
-import me.nullicorn.ooze.nbt.io.source.InputSource
+import me.nullicorn.ooze.nbt.io.source.ByteArraySource
+import me.nullicorn.ooze.nbt.io.source.Source
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
 @JsExport
-class NbtInput internal constructor(private val source: InputSource) {
+class NbtInput internal constructor(private val source: Source) {
 
     @JsName("ofBytes")
-    constructor(bytes: ByteArray) : this(ByteArrayInputSource(bytes))
+    constructor(bytes: ByteArray) : this(ByteArraySource(bytes))
 
     fun readRootCompound() = when (val rootType = runUnsafeInput("reading root type", ::readType)) {
         // If the type is null (indicating TAG_End), then the root is considered empty.

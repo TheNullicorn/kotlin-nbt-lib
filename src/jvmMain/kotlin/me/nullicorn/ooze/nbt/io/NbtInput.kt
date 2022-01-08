@@ -1,8 +1,8 @@
 package me.nullicorn.ooze.nbt.io
 
 import me.nullicorn.ooze.nbt.io.compress.Method
-import me.nullicorn.ooze.nbt.io.source.EmptyInputSource
-import me.nullicorn.ooze.nbt.io.source.StreamInputSource
+import me.nullicorn.ooze.nbt.io.source.EmptySource
+import me.nullicorn.ooze.nbt.io.source.StreamSource
 import me.nullicorn.ooze.nbt.lib.isExhausted
 import java.io.IOException
 import java.io.InputStream
@@ -27,11 +27,11 @@ import java.util.zip.InflaterInputStream
  */
 fun NbtInput(stream: InputStream): NbtInput {
     // Use the empty stream instance if no bytes are available.
-    if (stream.isExhausted) return NbtInput(EmptyInputSource)
+    if (stream.isExhausted) return NbtInput(EmptySource)
 
     // If the stream already has a decompressor, we have nothing else to do here.
     if (stream is GZIPInputStream || stream is InflaterInputStream) {
-        return NbtInput(StreamInputSource(stream))
+        return NbtInput(StreamSource(stream))
     }
 
     /*
@@ -58,7 +58,7 @@ fun NbtInput(stream: InputStream): NbtInput {
         // Make sure to return the peeked byte to the stream.
         peekStream.unread(1)
         // Return the 1-byte stream (possible if the only tag is a TAG_End, indicating empty data).
-        return NbtInput(StreamInputSource(stream))
+        return NbtInput(StreamSource(stream))
     } catch (cause: IOException) {
         throw InputException("Failed to return first magic byte to the stream", cause)
     }
@@ -84,5 +84,5 @@ fun NbtInput(stream: InputStream): NbtInput {
         Method.GZIP -> GZIPInputStream(peekStream)
     }
 
-    return NbtInput(StreamInputSource(decompressedStream))
+    return NbtInput(StreamSource(decompressedStream))
 }

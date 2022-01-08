@@ -2,7 +2,7 @@ package me.nullicorn.ooze.nbt.io.codec
 
 import me.nullicorn.ooze.nbt.io.InputException
 import me.nullicorn.ooze.nbt.io.runUnsafeInput
-import me.nullicorn.ooze.nbt.io.source.InputSource
+import me.nullicorn.ooze.nbt.io.source.Source
 
 private const val SIZE_BYTES = 4
 
@@ -17,7 +17,7 @@ private const val SIZE_BYTES = 4
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * consume, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.readFloat(endian: Endianness = Endianness.BIG) =
+internal fun Source.readFloat(endian: Endianness = Endianness.BIG) =
     runUnsafeInput("reading float") {
         Float.fromBits(readArbitrarySizeInt(length = SIZE_BYTES, endian))
     }
@@ -28,6 +28,6 @@ internal fun InputSource.readFloat(endian: Endianness = Endianness.BIG) =
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * discard, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.skipFloat() = runUnsafeInput("skipping float") {
+internal fun Source.skipFloat() = runUnsafeInput("skipping float") {
     skip(SIZE_BYTES)
 }

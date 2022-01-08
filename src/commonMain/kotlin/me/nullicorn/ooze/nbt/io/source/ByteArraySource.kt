@@ -11,7 +11,7 @@ import me.nullicorn.ooze.nbt.io.compress.decompress
  *
  * @param[source] The sequence of bytes to be consumed.
  */
-internal class ByteArrayInputSource(source: ByteArray) : InputSource {
+internal class ByteArraySource(source: ByteArray) : Source {
 
     private val source: ByteArray
 

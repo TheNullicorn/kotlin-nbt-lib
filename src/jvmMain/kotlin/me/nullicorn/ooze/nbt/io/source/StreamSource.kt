@@ -12,7 +12,7 @@ import java.io.InputStream
  *
  * @param[source] The stream to provide binary data to the consumer.
  */
-internal class StreamInputSource(private val source: InputStream) : InputSource {
+internal class StreamSource(private val source: InputStream) : Source {
 
     override fun readByte() = try {
         source.read().toByte()

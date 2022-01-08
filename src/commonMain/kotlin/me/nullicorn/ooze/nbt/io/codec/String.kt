@@ -2,7 +2,7 @@ package me.nullicorn.ooze.nbt.io.codec
 
 import me.nullicorn.ooze.nbt.io.InputException
 import me.nullicorn.ooze.nbt.io.runUnsafeInput
-import me.nullicorn.ooze.nbt.io.source.InputSource
+import me.nullicorn.ooze.nbt.io.source.Source
 
 /**
  * Consumes a dynamic number of bytes from the source, interpreted as a
@@ -18,7 +18,7 @@ import me.nullicorn.ooze.nbt.io.source.InputSource
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * consume, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.readString(): String {
+internal fun Source.readString(): String {
     val utfLength = runUnsafeInput("reading UTF length") { readShort().toUShort().toInt() }
     val utfBytes = runUnsafeInput("reading UTF value") { readToNewBuffer(utfLength) }
 
@@ -84,7 +84,7 @@ internal fun InputSource.readString(): String {
  * @throws[InputException] if the source is already exhausted, and there are no more bytes to
  * discard, or if it becomes exhausted during the operation.
  */
-internal fun InputSource.skipString() {
+internal fun Source.skipString() {
     val utfLength = runUnsafeInput("reading UTF length") { readShort().toUShort().toInt() }
     runUnsafeInput("skipping UTF value") { skip(utfLength) }
 }

@@ -7,7 +7,7 @@ import me.nullicorn.ooze.nbt.io.InputException
  *
  * All read/skip operations throw [InputException]s, due to the lack of bytes to provide.
  */
-internal object EmptyInputSource : InputSource {
+internal object EmptySource : Source {
     override fun readToBuffer(buffer: ByteArray, offset: Int, length: Int): ByteArray {
         throw InputException("Source is empty; nothing to read")
     }
