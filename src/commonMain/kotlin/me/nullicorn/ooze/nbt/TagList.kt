@@ -5,6 +5,10 @@ import kotlin.js.JsExport
 /**
  * An ordered collection of unnamed NBT tags, all with the same [Type].
  *
+ * Duplicate elements are supported, meaning the same value and/or instance can appear in the list
+ * multiple times at different indices, and can be retrieved from any index it exists at. Duplicate
+ * values will also be serialized multiple times when written to an output destination as NBT.
+ *
  * @param[contentType] The NBT type shared by all elements in the list.
  */
 @JsExport
