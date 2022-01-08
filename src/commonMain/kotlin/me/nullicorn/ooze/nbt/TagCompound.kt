@@ -348,7 +348,7 @@ class TagCompound(vararg entries: Entry) : Iterable<Entry> {
      * The general contract of [set] also applies to this method.
      * @see[set]
      */
-    fun setLong(name: String, value: LongArray) = set(name, Type.LONG, value)
+    fun setLong(name: String, value: Long) = set(name, Type.LONG, value)
 
     /**
      * Assigns the value of the tag with the specified [name] to a float [value].
