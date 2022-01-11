@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.io.codec
+package me.nullicorn.ooze.nbt.io
 
 /**
  * The order to combine bytes in when reading an integer or floating-point number from a stream.

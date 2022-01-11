@@ -4,12 +4,12 @@ import me.nullicorn.ooze.nbt.Entry
 import me.nullicorn.ooze.nbt.TagCompound
 import me.nullicorn.ooze.nbt.TagList
 import me.nullicorn.ooze.nbt.Type
-import me.nullicorn.ooze.nbt.io.codec.*
 import me.nullicorn.ooze.nbt.io.source.ByteArraySource
 import me.nullicorn.ooze.nbt.io.source.Source
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
+@Suppress("NON_EXPORTABLE_TYPE")
 @JsExport
 class NbtInput internal constructor(private val source: Source) {
 
