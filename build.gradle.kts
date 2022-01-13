@@ -1,6 +1,5 @@
 plugins {
     kotlin("multiplatform") version "1.6.20-M1-40"
-    id("io.kotest.multiplatform") version "5.0.2"
 }
 
 group = "me.nullicorn.ooze"
@@ -12,8 +11,6 @@ repositories {
 }
 
 kotlin {
-    val kotestVersion = "5.0.2"
-
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "1.8"
@@ -27,9 +24,21 @@ kotlin {
     js(IR) {
         binaries.executable()
 
-        nodejs()
+        nodejs {
+            testTask {
+                useMocha {
+                    timeout = "10000"
+                }
+            }
+        }
 
-        browser()
+        browser {
+            testTask {
+                useMocha {
+                    timeout = "10000"
+                }
+            }
+        }
     }
 
     // Suppressed b/c intellisense mistakes these for being unused.
@@ -42,18 +51,12 @@ kotlin {
         val commonMain by getting {}
         val commonTest by getting {
             dependencies {
-                implementation("io.kotest:kotest-assertions-core:$kotestVersion")
-                implementation("io.kotest:kotest-framework-engine:$kotestVersion")
-                implementation("io.kotest:kotest-framework-datatest:$kotestVersion")
+                implementation(kotlin("test"))
             }
         }
 
         val jvmMain by getting {}
-        val jvmTest by getting {
-            dependencies {
-                implementation("io.kotest:kotest-runner-junit5:$kotestVersion")
-            }
-        }
+        val jvmTest by getting {}
 
         val jsMain by getting {
             dependencies {

@@ -1,9 +1,8 @@
-package me.nullicorn.ooze.nbt.test.data
+package me.nullicorn.ooze.nbt.test
 
 import me.nullicorn.ooze.nbt.Type
 import me.nullicorn.ooze.nbt.Type.*
-import me.nullicorn.ooze.nbt.test.convert
-import me.nullicorn.ooze.nbt.test.data.Types.all
+import me.nullicorn.ooze.nbt.test.Types.all
 
 /**
  * Data for testing the [Type] enum, as well as features that use it.
@@ -14,8 +13,7 @@ object Types {
      *
      * @see[Type]
      */
-    val all: Set<Type>
-        get() = Type.values().toSet()
+    private val all: Set<Type> get() = Type.values().toSet()
 
     /**
      * All NBT types implemented by the library, mapped to their numeric (8-bit) identifier.
@@ -95,7 +93,7 @@ object Types {
     fun compatibleWith(type: Type): Set<Type> = when {
         numeric.contains(type) -> numeric
         array.contains(type) -> array
-        else -> setOf(type)
+        else -> setOf(type) // Any other type is *only compatible with itself*.
     }
 
     /**
@@ -107,4 +105,6 @@ object Types {
     fun incompatibleWith(type: Type): Set<Type> = allExcept(
         *compatibleWith(type).toTypedArray()
     )
+
+    fun forEach(test: (type: Type) -> Unit) = all.forEach(test)
 }

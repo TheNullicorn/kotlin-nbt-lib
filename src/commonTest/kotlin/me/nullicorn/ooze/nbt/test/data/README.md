@@ -1,4 +1,4 @@
 # me.nullicorn.ooze.nbt.test.data
 
-Utilities for using Kotest's data-driven features to test the library. Each class in this package is
-the plural name of the feature it provides data for.
+Stress-testing values for every NBT type implemented by the library. These values are intended to
+cover simple and extreme use cases. See `Strings.kt` for an example.

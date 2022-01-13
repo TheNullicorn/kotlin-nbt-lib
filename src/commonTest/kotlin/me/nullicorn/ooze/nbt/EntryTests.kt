@@ -1,88 +1,111 @@
-@file:Suppress("unused")
-
 package me.nullicorn.ooze.nbt
 
-import io.kotest.assertions.throwables.shouldNotThrow
-import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.ShouldSpec
-import io.kotest.datatest.withData
-import io.kotest.matchers.shouldBe
-import me.nullicorn.ooze.nbt.test.data.Entries
-import me.nullicorn.ooze.nbt.test.data.Names
-import me.nullicorn.ooze.nbt.test.data.Types
-import me.nullicorn.ooze.nbt.test.data.Values
-import me.nullicorn.ooze.nbt.test.withCompatibleValues
-import me.nullicorn.ooze.nbt.test.withIncompatibleValues
-import me.nullicorn.ooze.nbt.test.withTypes
+import me.nullicorn.ooze.nbt.test.*
+import kotlin.js.JsName
+import kotlin.test.Test
 
-class EntryTests : ShouldSpec({
-    // Tests for the primary constructor.
-    context("Entry()") {
-        withTypes("type") { type ->
-            withCompatibleValues(type) { compatibleValue, _ ->
-                shouldNotThrow<IllegalArgumentException> {
-                    Entry(type, Names.shouldntThrow, compatibleValue)
+class EntryTests {
+    @Test
+    @JsName("constructorTest_1")
+    fun `Entry() should not throw for any value compatible with the supplied type`() =
+        Types.forEach { targetType ->
+            for (compatibleType in Types.compatibleWith(targetType))
+                for (compatibleValue in Values.forType(compatibleType))
+                    shouldNotThrow { Entry(targetType, Names.shouldntThrow, compatibleValue) }
+        }
+
+    @Test
+    @JsName("constructorTest_2")
+    fun `Entry() should throw for any value incompatible with the supplied type`() =
+        Types.forEach { targetType ->
+            for (incompatibleType in Types.incompatibleWith(targetType))
+                for (incompatibleValue in Values.forType(incompatibleType))
+                    shouldThrow<IllegalArgumentException> {
+                        Entry(targetType, Names.shouldThrow, incompatibleValue)
+                    }
+        }
+
+    @Test
+    @JsName("typeTest")
+    fun `type should be equal to the one supplied`() = Types.forEach { type ->
+        val entry = Entry(type, Names.shouldntThrow, Values.oneOf(type))
+
+        // Make sure the getter returns that type.
+        entry.type shouldEqual type
+
+        // Make sure the corresponding "component" function also returns that type.
+        entry.component2() shouldEqual type
+    }
+
+    @Test
+    @JsName("nameTest")
+    fun `name should be equal to the one supplied`() = Types.forEach { type ->
+        Names.forEach { name ->
+            val entry = Entry(type, name, Values.oneOf(type))
+
+            // Make sure the getter returns that name.
+            entry.name shouldEqual name
+
+            // Make sure the corresponding "component" function also returns that name.
+            entry.component1() shouldEqual name
+        }
+    }
+
+    @Test
+    @JsName("genericGetterTest")
+    fun `value should be equal or similar to the one supplied`() = Types.forEach { targetType ->
+        Types.compatibleWith(targetType).forEach { compatibleType ->
+            Values.forType(compatibleType).forEach { value ->
+
+                val entry = Entry(targetType, Names.shouldntThrow, value)
+                val expectedValue = convert(value) from compatibleType to targetType
+
+                // Make sure the getter returns that value.
+                entry.value shouldEqual expectedValue
+
+                // Make sure the corresponding "component" function also returns that value.
+                entry.component3() shouldEqual expectedValue
+            }
+        }
+    }
+
+    @Test
+    @JsName("typedGetterTest_1")
+    fun `as{Type} should be equal or similar to the value supplied`() =
+        Types.forEach { targetType ->
+            Types.compatibleWith(targetType).forEach { compatibleType ->
+                Values.forType(compatibleType).forEach { value ->
+
+                    val entry = Entry(targetType, Names.shouldntThrow, value)
+
+                    val getter = Entries.getterFor(targetType)
+                    val expectedValue = convert(value) from compatibleType to targetType
+
+                    // Make sure the getter returns that value.
+                    entry.getter() shouldEqual expectedValue
+
+                    // Make sure the corresponding "component" function also returns that value.
+                    entry.component3() shouldEqual expectedValue
                 }
             }
-
-            withIncompatibleValues(type) { incompatibleValue ->
-                shouldThrow<IllegalArgumentException> {
-                    Entry(type, Names.shouldThrow, incompatibleValue)
-                }
-            }
         }
-    }
 
-    context("Entry.type") {
-        should("be equal to the type provided in the constructor") {
-            withData(Types.all) { type ->
-                val entry = Entry(type, Names.shouldntThrow, Values.oneOf(type))
+    @Test
+    @JsName("typedGetterTest_2")
+    fun `as{Type} should throw when used with wrong type`() = Types.forEach { targetType ->
+        Types.compatibleWith(targetType).forEach { compatibleType ->
+            Values.forType(compatibleType).forEach { value ->
 
-                entry.type shouldBe type
-                entry.component2() shouldBe type
-            }
-        }
-    }
+                val entry = Entry(targetType, Names.shouldThrow, value)
 
-    context("Entry.name") {
-        should("be equal to the name provided in the constructor") {
-            withData<String>(Names.testNamer, Names.all) { name ->
-                val entry = Entry(Type.BYTE, name, 0)
+                Types.allExcept(targetType).forEach { wrongType ->
+                    val wrongGetter = Entries.getterFor(wrongType)
 
-                entry.name shouldBe name
-                entry.component1() shouldBe name
-            }
-        }
-    }
-
-    context("Entry.value") {
-        context("should be equal to the value provided in the constructor") {
-            withTypes("type") { type ->
-                withCompatibleValues(type) { value, convertedValue ->
-                    val entry = Entry(type, Names.shouldntThrow, value)
-
-                    entry.value shouldBe convertedValue
-                    entry.component3() shouldBe convertedValue
-                }
-            }
-        }
-    }
-
-    context("Entry.as[Type]") {
-        withTypes("type") { type ->
-            val entry = Entry(type, Names.shouldntThrow, Values.oneOf(type))
-
-            should("return the entry's value when the $type getter is used") {
-                Entries.getterFor(type).get(entry) shouldBe entry.value
-            }
-
-            for (wrongType in Types.allExcept(type)) {
-                should("throw when the $wrongType getter is used") {
                     shouldThrow<IllegalStateException> {
-                        Entries.getterFor(wrongType).get(entry)
+                        entry.wrongGetter()
                     }
                 }
             }
         }
     }
-})
+}

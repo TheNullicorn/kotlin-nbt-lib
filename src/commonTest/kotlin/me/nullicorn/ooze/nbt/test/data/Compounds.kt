@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.test.data.values
+package me.nullicorn.ooze.nbt.test.data
 
 import me.nullicorn.ooze.nbt.Entry
 import me.nullicorn.ooze.nbt.TagCompound

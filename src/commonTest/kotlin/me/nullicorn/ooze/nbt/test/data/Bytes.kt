@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.test.data.values
+package me.nullicorn.ooze.nbt.test.data
 
 // Every 3rd byte, which includes Byte.MIN_VALUE and Byte.MAX_VALUE without needing all 255.
 internal val byteValues: Array<Byte>

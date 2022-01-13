@@ -1,34 +1,32 @@
-@file:Suppress("unused")
-
 package me.nullicorn.ooze.nbt
 
-import io.kotest.core.spec.style.ShouldSpec
-import io.kotest.datatest.withData
-import io.kotest.matchers.shouldBe
-import me.nullicorn.ooze.nbt.test.data.Types
+import me.nullicorn.ooze.nbt.test.Types
+import me.nullicorn.ooze.nbt.test.shouldEqual
+import kotlin.js.JsName
+import kotlin.test.Test
 
-class TypeTests : ShouldSpec({
-    context("Type.identifier") {
-        should("return the type's identifying byte") {
-            withData(Types.withIdentifier) { (type, identifier) ->
-                type.identifier shouldBe identifier
-            }
+class TypeTests {
+    @Test
+    @JsName("identifierTest")
+    fun `identifier should return the type's identifying byte`() {
+        for ((type, identifier) in Types.withIdentifier) {
+            type.identifier shouldEqual identifier
         }
     }
 
-    context("Type.fromIdentifier") {
-        should("return the type associated with the identifier") {
-            withData(Types.withIdentifier) { (type, identifier) ->
-                Type.fromIdentifier(identifier) shouldBe type
-            }
+    @Test
+    @JsName("fromIdentifierTest")
+    fun `fromIdentifier() should return the type associated with the identifier`() {
+        for ((type, identifier) in Types.withIdentifier) {
+            Type.fromIdentifier(identifier) shouldEqual type
         }
     }
 
-    context("Type.toString") {
-        should("return the standard name for the NBT type") {
-            withData(Types.withName) { (type, name) ->
-                type.toString() shouldBe name
-            }
+    @Test
+    @JsName("toStringTest")
+    fun `toString() should return the standard name for the type`() {
+        for ((type, name) in Types.withName) {
+            type.toString() shouldEqual name
         }
     }
-})
+}

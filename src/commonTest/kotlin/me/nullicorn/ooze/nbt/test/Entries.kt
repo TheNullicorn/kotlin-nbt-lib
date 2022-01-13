@@ -1,9 +1,8 @@
-package me.nullicorn.ooze.nbt.test.data
+package me.nullicorn.ooze.nbt.test
 
 import me.nullicorn.ooze.nbt.Entry
 import me.nullicorn.ooze.nbt.Type
 import me.nullicorn.ooze.nbt.Type.*
-import kotlin.reflect.KProperty1
 
 /**
  * Data for testing the [Entry] class.
@@ -13,7 +12,7 @@ object Entries {
     /**
      * @return the type-specific getter property for an [Entry] with the supplied [type].
      */
-    fun getterFor(type: Type): EntryGetter<*> = when (type) {
+    fun getterFor(type: Type): Entry.() -> Any = when (type) {
         BYTE -> Entry::asByte
         SHORT -> Entry::asShort
         INT -> Entry::asInt
@@ -29,5 +28,3 @@ object Entries {
         else -> throw IllegalStateException("No known getter in Entry for ${type.name}")
     }
 }
-
-typealias EntryGetter<T> = KProperty1<Entry, T>

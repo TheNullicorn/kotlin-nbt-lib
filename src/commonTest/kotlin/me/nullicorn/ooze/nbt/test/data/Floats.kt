@@ -1,4 +1,4 @@
-package me.nullicorn.ooze.nbt.test.data.values
+package me.nullicorn.ooze.nbt.test.data
 
 internal val floatValues: Array<Float>
     get() = floatArrayOf(

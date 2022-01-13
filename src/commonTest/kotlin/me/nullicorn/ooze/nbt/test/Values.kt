@@ -1,9 +1,13 @@
-package me.nullicorn.ooze.nbt.test.data
+package me.nullicorn.ooze.nbt.test
 
 import me.nullicorn.ooze.nbt.Type
 import me.nullicorn.ooze.nbt.Type.*
-import me.nullicorn.ooze.nbt.test.convert
-import me.nullicorn.ooze.nbt.test.data.values.*
+import me.nullicorn.ooze.nbt.test.data.*
+import me.nullicorn.ooze.nbt.test.data.byteArrayValues
+import me.nullicorn.ooze.nbt.test.data.byteValues
+import me.nullicorn.ooze.nbt.test.data.doubleValues
+import me.nullicorn.ooze.nbt.test.data.floatValues
+import me.nullicorn.ooze.nbt.test.data.intValues
 
 /**
  * Data for testing values of NBT tags.
