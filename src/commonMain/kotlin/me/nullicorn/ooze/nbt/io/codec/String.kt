@@ -19,7 +19,7 @@ import me.nullicorn.ooze.nbt.io.source.Source
  * consume, or if it becomes exhausted during the operation.
  */
 internal fun Source.readString(): String {
-    val utfLength = runUnsafeInput("reading UTF length") { readShort().toUShort().toInt() }
+    val utfLength = runUnsafeInput("reading UTF length", ::readShort).toUShort().toInt()
     val utfBytes = runUnsafeInput("reading UTF value") { readToNewBuffer(utfLength) }
 
     // utfLength is just the max length. The whole array might not be used.
@@ -30,7 +30,7 @@ internal fun Source.readString(): String {
 
     while (byteIndex < utfLength) {
         val byte1 = utfBytes[byteIndex++].toInt()
-        chars[charIndex++] = when (byte1 ushr 4) {
+        chars[charIndex++] = when (byte1 and 0xFF shr 4) {
             0, 1, 2, 3, 4, 5, 6, 7 -> {
                 // Use the byte's actual value as the character.
                 byte1.toChar()
@@ -85,6 +85,6 @@ internal fun Source.readString(): String {
  * discard, or if it becomes exhausted during the operation.
  */
 internal fun Source.skipString() {
-    val utfLength = runUnsafeInput("reading UTF length") { readShort().toUShort().toInt() }
+    val utfLength = runUnsafeInput("reading UTF length", ::readShort).toUShort().toInt()
     runUnsafeInput("skipping UTF value") { skip(utfLength) }
 }

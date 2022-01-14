@@ -64,7 +64,7 @@ internal class ByteArraySource(source: ByteArray) : Source {
         if (outOfBytes(length)) {
             throw InputException("Not enough bytes in source array to skip $length bytes")
         }
-        head++
+        head += length
     }
 
     override fun readByte(): Byte {

@@ -4,9 +4,8 @@ import me.nullicorn.ooze.nbt.Entry
 import me.nullicorn.ooze.nbt.TagCompound
 import me.nullicorn.ooze.nbt.TagList
 import me.nullicorn.ooze.nbt.Type
-import me.nullicorn.ooze.nbt.io.codec.readString
-import me.nullicorn.ooze.nbt.io.source.ByteArraySource
-import me.nullicorn.ooze.nbt.io.source.Source
+import me.nullicorn.ooze.nbt.io.codec.*
+import me.nullicorn.ooze.nbt.io.source.*
 import kotlin.js.JsExport
 import kotlin.js.JsName
 
@@ -24,7 +23,7 @@ class NbtInput internal constructor(private val source: Source) {
 
         Type.COMPOUND -> {
             // Skip the root compound's name, which is usually empty anyway.
-            readString()
+            source.skipString()
             // Return the root compound.
             readCompound()
         }
@@ -203,20 +202,17 @@ class NbtInput internal constructor(private val source: Source) {
      */
     @Throws(InputException::class, MalformedNbtException::class)
     fun readList(): TagList {
+        val contentType = readType()
         val length = readLength(Type.LIST)
 
-        val contentType = readType()
         if (contentType == null) {
             if (length > 0) throw MalformedNbtException("Non-empty lists must specify a type")
             // Fall-back to BYTE, the first type, since we don't keep an enum value for TAG_End.
             return TagList(Type.BYTE)
         }
 
-        val elements = Array(length) {
-
-        }
-
-        return TagList(contentType, elements)
+        val elements = Array(length) { readTag(contentType) }
+        return TagList(contentType, *elements)
     }
 
     /**

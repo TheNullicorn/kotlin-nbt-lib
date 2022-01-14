@@ -90,12 +90,12 @@ internal fun ByteArray.readSmallInt(
     var result = 0
 
     for (i in 0 until length) {
-        val bytesToShift =
+        val bitsToShift = Byte.SIZE_BITS *
             if (endian == Endianness.LITTLE) i
             else length - i - 1
 
-        val bits = this[offset + i].toInt()
-        result = result or (bits shl (Byte.SIZE_BITS * bytesToShift))
+        val bits = this[offset + i].toInt() and 0xFF
+        result = result or (bits shl bitsToShift)
     }
 
     return result
@@ -130,12 +130,12 @@ internal fun ByteArray.readLargeInt(
     var result = 0L
 
     for (i in 0 until length) {
-        val bytesToShift =
+        val bitsToShift = Byte.SIZE_BITS *
             if (endian == Endianness.LITTLE) i
             else length - i - 1
 
-        val bits = this[offset + i].toLong()
-        result = result or (bits shl (Byte.SIZE_BITS * bytesToShift))
+        val bits = this[offset + i].toLong() and 0xFF
+        result = result or (bits shl bitsToShift)
     }
 
     return result

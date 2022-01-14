@@ -248,8 +248,8 @@ class TagList(val contentType: Type, vararg elements: Any) : Iterable<Any> {
      * by the [contentType].
      */
     private fun <T : Any> checkValues(values: Array<T>): Collection<T> {
-        // Retrieve all elements immediately, so that bad values can't be injected by returning
-        // valid values to this function, but not to the caller.
+        // Retrieve all elements immediately, so that bad values can't be injected by modifying the
+        // array after the check.
         val listOfValues = values.toList()
 
         // Make sure each value is valid, given the contentType.
